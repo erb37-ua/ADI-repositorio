@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+  <title>Home</title>
+
+  <link rel="stylesheet" href="styles.css">
+
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+  <header class="header">
+    <div class="header__logo">R</div>
+    <nav class="header__nav">RECETAS &nbsp; FILTROS &nbsp; CONTACTO &nbsp; SOBRE MÍ</nav>
+  </header>
+
+  <main class="container">
+    <div class="grid">
+      <article class="card">
+        <img src="../imagenes/comida1.jpg" alt="" class="card__image">
+        
+        <div class="card__title-row">
+          <h4 class="card__title">Arrocito con carne</h4>
+          <input type="checkbox" id="like1" class="card__like-check">
+          <label for="like1" class="card__like-label">
+            <i class="fa-solid fa-heart"></i>
+          </label>
+        </div>
+        
+        <p class="card__comments">7 comentarios</p>
+      </article>
+
+      <article class="card">
+        <img src="../imagenes/comida.jpeg" alt="" class="card__image">
+        <div class="card__title-row">
+          <h4 class="card__title">Cinnamon rolls</h4>
+          <input type="checkbox" id="like2" class="card__like-check">
+          <label for="like2" class="card__like-label">
+            <i class="fa-solid fa-heart"></i>
+          </label>
+        </div>
+        <p class="card__comments">7 comentarios</p>
+      </article>
+
+      <article class="card">
+        <img src="../imagenes/comida1.jpg" alt="" class="card__image">
+        <div class="card__title-row">
+          <h4 class="card__title">Arrocito con carne</h4>
+          <input type="checkbox" id="like3" class="card__like-check">
+          <label for="like3" class="card__like-label">
+            <i class="fa-solid fa-heart"></i>
+          </label>
+        </div>
+        <p class="card__comments">2 comentarios</p>
+      </article>
+    </div>
+    
+    <div class="add-card">
+      <button class="add-card__button" title="Añadir receta">
+        <i class="fa-solid fa-circle-plus"></i>
+      </button>
+    </div>
+  </main>
+
+  <footer class="footer">© 2025 Recetarizada</footer>
+</body>
+</html>

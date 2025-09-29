@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+  <title>Mis recetas</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header__logo">R</div>
+  </header>
+
+  <main class="recipes">
+    <div class="recipes__controls">
+      <select class="recipes__filter">
+        <option value="">Filtrar</option>
+        <option value="entrante">Entrante</option>
+        <option value="principal">Principal</option>
+        <option value="postre">Postre</option>
+      </select>
+
+      <button class="recipes__button">Añadir receta</button>
+    </div>
+
+    <div class="recipes__list">
+      <div class="recipes__card">
+        <img src="../imagenes/comida.jpeg" alt="" class="recipes__card-image">
+        <div class="recipes__card-info">
+          <h3 class="recipes__card-title">Título</h3>
+          <p class="recipes__card-description">Receta de pasta...</p>
+        </div>
+        <div class="recipes__card-actions">
+          <button class="recipes__card-button">Editar</button>
+          <button class="recipes__card-button">Eliminar</button>
+        </div>
+      </div>
+
+      <div class="recipes__card">
+        <img src="../imagenes/comida1.jpg" alt="" class="recipes__card-image">
+        <div class="recipes__card-info">
+          <h3 class="recipes__card-title">Título</h3>
+          <p class="recipes__card-description">Receta de pasta...</p>
+        </div>
+        <div class="recipes__card-actions">
+          <button class="recipes__card-button">Editar</button>
+          <button class="recipes__card-button">Eliminar</button>
+        </div>
+      </div>
+    </div>
+
+    <nav class="recipes__pagination">
+      <span class="recipes__page-link">«</span>
+      <span class="recipes__page-link recipes__page-link--active">1</span>
+      <span class="recipes__page-link">2</span>
+      <span class="recipes__page-link">3</span>
+      <span class="recipes__page-link">»</span>
+    </nav>
+  </main>
+
+  <footer class="footer">© 2025 Recetarlizada</footer>
+</body>
+</html>
