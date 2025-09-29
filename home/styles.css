@@ -183,3 +183,8 @@ main {flex: 1;}
   color: #fff;
   text-shadow: 0 0 0 var(--accent);
 }
+
+.card__link {
+  text-decoration: none; 
+  color: inherit;
+}
