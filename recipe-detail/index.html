@@ -1,11 +1,210 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cinnamon Rolls</title><link rel="stylesheet" href="styles.css"></head><body>
-<header class="header"><div class="logo">R</div></header>
-<main class="container">
-  <h2 class="center">Cinnamon Rolls</h2>
-  <div class="card" style="max-width:900px">
-    <img src="thumb.png" style="display:block;margin:0 auto 18px;max-width:520px">
-    <p>Lorem ipsum dolor sit amet... </p>
-    <h4>Ingredientes</h4><ul><li>Movida 1</li><li>Movida 2</li></ul>
-    <h4>Pasos</h4><p>1. Mezclar</p>
-  </div>
-</main><footer class="footer">© 2025 Recetarlizada</footer></body></html>
+<!doctype html><html lang="es"><head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Cinnamon Rolls</title><link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header__inner">
+        <div class="header__left">
+          <a href="../home/index.html">
+            <img src="../imagenes/logo.png" alt="Logo" class="header__logo">
+          </a>
+        </div>
+
+        <nav class="header__nav">
+          <a href="../list/index.html" class="header__nav-item">RECETAS</a>
+
+          <!-- checkbox antes del label -->
+          <input type="checkbox" id="toggle-filtros" class="header__toggle-filtros" />
+          <label for="toggle-filtros" class="header__nav-item header__nav-item--filtros">FILTROS</label>
+
+          <a href="../contact/index.html" class="header__nav-item">CONTACTO</a>
+          <a href="../about/index.html" class="header__nav-item">SOBRE MÍ</a>
+        </nav>
+
+        <div class="header__search">
+          <img src="../imagenes/lupa.png" alt="Buscar" class="header__search-icon">
+          <input type="text" class="header__search-input" placeholder="   Buscar...">
+        </div>
+
+        <div class="header__right">
+          <a href="../profile/index.html">
+            <img src="../imagenes/icono-perfil.png" alt="Perfil" class="header__profile-icon">
+          </a>
+        </div>
+      </div>
+
+      <!-- Menú desplegable
+      <input type="checkbox" id="toggle-filtros" class="header__toggle-filtros" />
+      
+      <div class="header__dropdown">
+        <div class="header__dropdown-section">
+          <div class="header__dropdown-favoritos">FAVORITOS</div>
+          <div class="header__dropdown-guardados">Guardados</div>
+        </div>
+        <div class="header__dropdown-section">
+          <div class="header__dropdown-title">SABORES</div>
+          <div class="header__dropdown-sub header__dropdown-sub--sabores">
+            <div class="header__dropdown-item">Salado</div>
+            <div class="header__dropdown-item">Dulce</div>
+          </div>
+        </div>
+        <div class="header__dropdown-section">
+          <div class="header__dropdown-title">HORA DE LA COMIDA</div>
+          <div class="header__dropdown-sub header__dropdown-sub--hora">
+            <div class="header__dropdown-item">Desayunos</div>
+            <div class="header__dropdown-item">Comidas</div>
+            <div class="header__dropdown-item">Cenas</div>  
+          </div>
+        </div>
+      </div> -->
+    </header>
+
+    <!-- Main -->
+    <main class="recipe-detail">
+      <h2 class="recipe-detail__title">Cinnamon Rolls</h2>
+      
+      <img class="recipe-detail__image" src="../imagenes/cinnamonrolls.jpeg" alt="Cinnamon Rolls">
+
+      <p class="recipe-detail__description">
+        Los Cinnamon Rolls son unos esponjosos bollitos de masa dulce rellenos con mantequilla, azúcar y canela, enrollados en espiral y horneados hasta quedar tiernos y aromáticos.
+        Se suelen terminar con un glaseado de queso crema o azúcar glas.
+        Una receta clásica que nunca falla y que hará que tu cocina huela increíble.
+      </p>
+
+      <h3 class="recipe-detail__section-title">INGREDIENTES</h3>
+
+      <div class="recipe-detail__ingredients">
+        <h4 class="recipe-detail__subsection-title">Para la masa</h4>
+        <ul class="recipe-detail__list">
+          <li>500 g de harina de trigo de fuerza</li>
+          <li>250 ml de leche tibia</li>
+          <li>75 g de azúcar</li>
+          <li>1 huevo</li>
+          <li>1 yema de huevo</li>
+          <li>80 g de mantequilla sin sal (derretida)</li>
+          <li>7 g de levadura seca de panadería (o 20 g fresca)</li>
+          <li>1 pizca de sal</li>
+        </ul>
+
+        <h4 class="recipe-detail__subsection-title">Para el relleno</h4>
+        <ul class="recipe-detail__list">
+          <li>100 g de mantequilla sin sal (a temperatura ambiente)</li>
+          <li>120 g de azúcar moreno</li>
+          <li>2–3 cucharadas de canela en polvo</li>
+        </ul>
+
+        <h4 class="recipe-detail__subsection-title">Para el glaseado (opcional)</h4>
+        <ul class="recipe-detail__list">
+          <li>100 g de queso crema tipo Philadelphia</li>
+          <li>50 g de mantequilla sin sal (blanda)</li>
+          <li>100 g de azúcar glas</li>
+          <li>1 cucharadita de esencia de vainilla</li>
+        </ul>
+      </div>
+
+      <h3 class="recipe-detail__section-title">PASOS</h3>
+      <ol class="recipe-detail__steps">
+        <li><strong>Activar la levadura:</strong> mezcla la leche tibia con la levadura y una cucharadita de azúcar. Deja reposar 8–10 minutos hasta que empiece a espumar.</li>
+        <li><strong>Preparar la masa:</strong> en un bol grande mezcla la harina, el azúcar y la sal. Haz un hueco en el centro y añade el huevo, la yema, la mantequilla derretida y la mezcla de levadura. Amasa hasta obtener una masa suave y elástica (10–15 min a mano o 7–8 min en amasadora).</li>
+        <li><strong>Primer levado:</strong> coloca la masa en un bol engrasado, cúbrela y deja reposar en un lugar templado hasta que doble su tamaño (aprox. 1–1½ h).</li>
+        <li><strong>Estirar y rellenar:</strong> estira la masa con un rodillo formando un rectángulo (aprox. 40×30 cm). Unta la mantequilla blanda por toda la superficie. Mezcla el azúcar moreno con la canela y espolvorea uniformemente.</li>
+        <li><strong>Enrollar y cortar:</strong> enrolla la masa desde el lado largo hasta formar un cilindro. Corta en 10–12 rodajas de 3–4 cm y colócalas en una bandeja con papel vegetal, dejando espacio entre ellas.</li>
+        <li><strong>Segundo levado:</strong> tapa los rollos y deja reposar 30–45 minutos hasta que aumenten casi al doble.</li>
+        <li><strong>Hornear:</strong> precalienta el horno a 180 °C. Hornea 20–25 minutos hasta que estén dorados pero aún tiernos.</li>
+        <li><strong>Preparar el glaseado (opcional):</strong> bate el queso crema con la mantequilla blanda, el azúcar glas y la vainilla hasta obtener una crema suave.</li>
+        <li><strong>Glasear y servir:</strong> extiende el glaseado sobre los rolls calientes para que se funda ligeramente. Sirve templados y disfruta.</li>
+      </ol>
+    </main>
+
+    <!-- Sección de comentarios -->
+    <section class="recipe-comments">
+
+      <!-- Recuadro para escribir un comentario -->
+      <div class="recipe-comments__box">
+        <h3 class="recipe-comments__title">Deja tu comentario</h3>
+        <form class="recipe-comments__form">
+          <div class="recipe-comments__row">
+            <label for="rating">Valoración:</label><br>
+            <select id="rating" name="rating" class="recipe-comments__input">
+              <option value="0">0 estrellas</option>
+              <option value="1">1 estrella</option>
+              <option value="2">2 estrellas</option>
+              <option value="3">3 estrellas</option>
+              <option value="4">4 estrellas</option>
+              <option value="5">5 estrellas</option>
+            </select>
+          </div>
+
+          <div class="recipe-comments__row">
+            <label for="comment">Comentario:</label><br>
+            <textarea id="comment" name="comment" class="recipe-comments__input" rows="4" placeholder="Escribe aquí tu comentario..."></textarea>
+          </div>
+
+          <button type="submit" class="recipe-comments__btn">Enviar</button>
+        </form>
+      </div>
+
+      <!-- Recuadro para la lista de comentarios -->
+      <div class="recipe-comments__list">
+        <h3 class="recipe-comments__title">Comentarios anteriores</h3>
+
+        <div class="recipe-comments__item">
+          <p class="recipe-comments__author"><strong>Ana</strong></p>
+          <p class="recipe-comments__meta">28/09/2025 18:30</p>
+          <p class="recipe-comments__stars">⭐⭐⭐⭐⭐</p>
+          <p class="recipe-comments__text">Me encantó la receta, me salió riquísima 😍</p>
+          <hr class="recipe-comments__divider">
+        </div>
+
+        <div class="recipe-comments__item">
+          <p class="recipe-comments__author"><strong>Pedro</strong></p>
+          <p class="recipe-comments__meta">28/09/2025 19:10</p>
+          <p class="recipe-comments__stars">⭐⭐⭐⭐</p>
+          <p class="recipe-comments__text">Probé a ponerle un poco menos de azúcar y quedó genial 👌</p>
+          <hr class="recipe-comments__divider">
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <!-- Izquierda -->
+        <div class="site-footer__left">
+          &copy; 2025 Recetarizada
+        </div>
+
+        <!-- Centro -->
+        <nav class="site-footer__center" aria-label="Enlaces legales">
+          <a href="/aviso-legal">Aviso Legal</a>
+          <a href="/politica-privacidad">Política de Privacidad</a>
+          <a href="/politica-cookies">Política de Cookies</a>
+        </nav>
+
+        <!-- Derecha: iconos de redes sociales -->
+        <div class="site-footer__right" aria-label="Redes sociales">
+          <a class="site-footer__social-link" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+            <img class="site-footer__social-icon" src="../imagenes/youtube.png" alt="YouTube">
+          </a>
+          <a class="site-footer__social-link" href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <img class="site-footer__social-icon" src="../imagenes/instagram.png" alt="Instagram">
+          </a>
+          <a class="site-footer__social-link" href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+            <img class="site-footer__social-icon" src="../imagenes/tiktok.png" alt="TikTok">
+          </a>
+          <a class="site-footer__social-link" href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+            <img class="site-footer__social-icon" src="../imagenes/twitter.png" alt="Twitter">
+          </a>
+          <a class="site-footer__social-link" href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
+            <img class="site-footer__social-icon" src="../imagenes/pinterest.png" alt="Pinterest">
+          </a>
+          <a class="site-footer__social-link" href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <img class="site-footer__social-icon" src="../imagenes/facebook.png" alt="Facebook">
+          </a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

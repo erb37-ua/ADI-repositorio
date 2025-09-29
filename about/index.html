@@ -1,6 +1,124 @@
-<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sobre mí</title><link rel="stylesheet" href="styles.css"></head><body>
-<header class="header"><div class="logo">R</div></header>
-<main class="container">
-  <h2>Sobre mí</h2>
-  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam...</p>
-</main><footer class="footer">© 2025 Recetarlizada</footer></body></html>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sobre mí</title><link rel="stylesheet" href="styles.css"></head>
+  <body>
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header__inner">
+        <div class="header__left">
+          <a href="../home/index.html">
+            <img src="../imagenes/logo.png" alt="Logo" class="header__logo">
+          </a>
+        </div>
+
+        <nav class="header__nav">
+          <a href="../list/index.html" class="header__nav-item">RECETAS</a>
+
+          <!-- checkbox antes del label -->
+          <input type="checkbox" id="toggle-filtros" class="header__toggle-filtros" />
+          <label for="toggle-filtros" class="header__nav-item header__nav-item--filtros">FILTROS</label>
+
+          <a href="../contact/index.html" class="header__nav-item">CONTACTO</a>
+          <a href="../about/index.html" class="header__nav-item">SOBRE MÍ</a>
+        </nav>
+
+        <div class="header__search">
+          <img src="../imagenes/lupa.png" alt="Buscar" class="header__search-icon">
+          <input type="text" class="header__search-input" placeholder="   Buscar...">
+        </div>
+
+        <div class="header__right">
+          <a href="../profile/index.html">
+            <img src="../imagenes/icono-perfil.png" alt="Perfil" class="header__profile-icon">
+          </a>
+        </div>
+      </div>
+
+      <!-- Menú desplegable
+      <input type="checkbox" id="toggle-filtros" class="header__toggle-filtros" />
+      
+      <div class="header__dropdown">
+        <div class="header__dropdown-section">
+          <div class="header__dropdown-favoritos">FAVORITOS</div>
+          <div class="header__dropdown-guardados">Guardados</div>
+        </div>
+        <div class="header__dropdown-section">
+          <div class="header__dropdown-title">SABORES</div>
+          <div class="header__dropdown-sub header__dropdown-sub--sabores">
+            <div class="header__dropdown-item">Salado</div>
+            <div class="header__dropdown-item">Dulce</div>
+          </div>
+        </div>
+        <div class="header__dropdown-section">
+          <div class="header__dropdown-title">HORA DE LA COMIDA</div>
+          <div class="header__dropdown-sub header__dropdown-sub--hora">
+            <div class="header__dropdown-item">Desayunos</div>
+            <div class="header__dropdown-item">Comidas</div>
+            <div class="header__dropdown-item">Cenas</div>  
+          </div>
+        </div>
+      </div> -->
+    </header>
+
+    <!-- Main -->
+    <main class="main-container">
+      <div class="about-section">
+        <div class="about-section__text">
+          <h1 class="about-section__title">Sobre mí</h1>
+          <p class="about-section__paragraph">¡Hola! Soy estudiante de 4º de carrera de ingeniería informática y, aunque paso muchas horas entre apuntes y trabajos, uno de mis mayores hobbies es cocinar.
+            Y para que sepáis un poco más de mí, aunque es bastante obvio por el nombre, os dejo una imagen por aquí.</p>
+
+          <p class="about-section__paragraph">Ahora estoy poco a poco implementado recetas de otros países, sobre todo de Asia y Latinoamérica, ¡mirad en la página y probad, están buenísimas!</p>
+
+          <p class="about-section__paragraph">Aquí encontrarás recetas sencillas, todas hechas por mí. Espero que te sirvan para inspirarte, aprender algo nuevo o simplemente disfrutar de la cocina tanto como yo.</p>
+
+          <p class="about-section__paragraph">Bienvenido/a a mi rincón culinario, ¡ojalá lo disfrutes tanto como yo al crearlo! 🌿✨</p>
+        </div>
+
+        <div class="about-section__image">
+          <img src="../imagenes/yo.jpeg" alt="Foto sobre mí" class="about-section__img">
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <!-- Izquierda -->
+        <div class="site-footer__left">
+          &copy; 2025 Recetarizada
+        </div>
+
+        <!-- Centro -->
+        <nav class="site-footer__center" aria-label="Enlaces legales">
+          <a href="/aviso-legal">Aviso Legal</a>
+          <a href="/politica-privacidad">Política de Privacidad</a>
+          <a href="/politica-cookies">Política de Cookies</a>
+        </nav>
+
+        <!-- Derecha: iconos de redes sociales -->
+        <div class="site-footer__right" aria-label="Redes sociales">
+          <a class="site-footer__social-link" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+            <img class="site-footer__social-icon" src="../imagenes/youtube.png" alt="YouTube">
+          </a>
+          <a class="site-footer__social-link" href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <img class="site-footer__social-icon" src="../imagenes/instagram.png" alt="Instagram">
+          </a>
+          <a class="site-footer__social-link" href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+            <img class="site-footer__social-icon" src="../imagenes/tiktok.png" alt="TikTok">
+          </a>
+          <a class="site-footer__social-link" href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+            <img class="site-footer__social-icon" src="../imagenes/twitter.png" alt="Twitter">
+          </a>
+          <a class="site-footer__social-link" href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
+            <img class="site-footer__social-icon" src="../imagenes/pinterest.png" alt="Pinterest">
+          </a>
+          <a class="site-footer__social-link" href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <img class="site-footer__social-icon" src="../imagenes/facebook.png" alt="Facebook">
+          </a>
+        </div>
+      </div>
+    </footer>
+
+  </body>
+</html>

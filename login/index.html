@@ -9,8 +9,15 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
+<!-- Header -->
 <header class="header">
-  <div class="header__logo">R</div>
+  <div class="header__inner">
+    <div class="header__left">
+      <a href="../home/index.html">
+        <img src="../imagenes/logo.png" alt="Logo" class="header__logo">
+      </a>
+    </div>
+  </div>
 </header>
 
 <main class="login">
@@ -38,7 +45,7 @@
 
     <!-- Botón iniciar -->
     <div class="login-card__form-row">
-      <button class="login-card__button">
+      <button class="login-card__button" onclick="location.href='../home/index.html'">
         <i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión
       </button>
     </div>
@@ -59,11 +66,48 @@
         <i class="fa-brands fa-google"></i> Continúa con Google
       </button>
       <a class="login-card__link--register">¿No tienes cuenta?</a>
-      <a href="#" class="login-card__link login-card__link--register">Regístrate</a>
+      <a href="../register/index.html" class="login-card__link login-card__link--register">Regístrate</a>
     </div>
   </section>
 </main>
 
-<footer class="footer">© 2025 Recetarlizada</footer>
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="site-footer__inner">
+      <!-- Izquierda -->
+      <div class="site-footer__left">
+        &copy; 2025 Recetarizada
+      </div>
+
+      <!-- Centro -->
+      <nav class="site-footer__center" aria-label="Enlaces legales">
+        <a href="/aviso-legal">Aviso Legal</a>
+        <a href="/politica-privacidad">Política de Privacidad</a>
+        <a href="/politica-cookies">Política de Cookies</a>
+      </nav>
+
+      <!-- Derecha: iconos de redes sociales -->
+      <div class="site-footer__right" aria-label="Redes sociales">
+        <a class="site-footer__social-link" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+          <img class="site-footer__social-icon" src="../imagenes/youtube.png" alt="YouTube">
+        </a>
+        <a class="site-footer__social-link" href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <img class="site-footer__social-icon" src="../imagenes/instagram.png" alt="Instagram">
+        </a>
+        <a class="site-footer__social-link" href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+          <img class="site-footer__social-icon" src="../imagenes/tiktok.png" alt="TikTok">
+        </a>
+        <a class="site-footer__social-link" href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+          <img class="site-footer__social-icon" src="../imagenes/twitter.png" alt="Twitter">
+        </a>
+        <a class="site-footer__social-link" href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
+          <img class="site-footer__social-icon" src="../imagenes/pinterest.png" alt="Pinterest">
+        </a>
+        <a class="site-footer__social-link" href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+          <img class="site-footer__social-icon" src="../imagenes/facebook.png" alt="Facebook">
+        </a>
+      </div>
+    </div>
+  </footer>
 </body>
 </html>
