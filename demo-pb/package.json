@@ -1,0 +1,23 @@
+{
+  "name": "demo-pb",
+  "version": "22.20.0",
+  "description": "",
+  "homepage": "https://github.com/erb37-ua/ADI-repositorio#readme",
+  "bugs": {
+    "url": "https://github.com/erb37-ua/ADI-repositorio/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erb37-ua/ADI-repositorio.git"
+  },
+  "license": "ISC",
+  "author": "fmpp3-ua,erb37-ua",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "pocketbase": "^0.26.2"
+  }
+}
