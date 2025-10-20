@@ -1,0 +1,176 @@
+<!doctype html><html lang="es">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Cinnamon Rolls</title>
+    <link rel="stylesheet" href="/frontend/pages/recipe-detail/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Header -->
+    <header class="header">
+      <div class="header__inner">
+        <div class="header__left">
+          <a href="/frontend/pages/home/index.html">
+            <img src="/frontend/pages/imagenes/logo.png" alt="Logo" class="header__logo">
+          </a>
+        </div>
+
+        <nav class="header__nav">
+          <a href="/frontend/pages/list/index.html" class="header__nav-item">RECETAS</a>
+
+          <!-- checkbox antes del label -->
+          <input type="checkbox" id="toggle-filtros" class="header__toggle-filtros" />
+          <label for="toggle-filtros" class="header__nav-item header__nav-item--filtros">FILTROS</label>
+
+          <a href="/frontend/pages/contact/index.html" class="header__nav-item">CONTACTO</a>
+          <a href="/frontend/pages/about/index.html" class="header__nav-item">SOBRE MÍ</a>
+        </nav>
+
+        <div class="header__search">
+          <img src="/frontend/pages/imagenes/lupa.png" alt="Buscar" class="header__search-icon">
+          <input type="text" class="header__search-input" placeholder="   Buscar...">
+        </div>
+
+        <div class="header__right">
+          <a href="/frontend/pages/profile/index.html">
+            <img src="/frontend/pages/imagenes/icono-perfil.png" alt="Perfil" class="header__profile-icon">
+          </a>
+        </div>
+      </div>
+
+      <!-- Menú desplegable
+      <input type="checkbox" id="toggle-filtros" class="header__toggle-filtros" />
+      
+      <div class="header__dropdown">
+        <div class="header__dropdown-section">
+          <div class="header__dropdown-favoritos">FAVORITOS</div>
+          <div class="header__dropdown-guardados">Guardados</div>
+        </div>
+        <div class="header__dropdown-section">
+          <div class="header__dropdown-title">SABORES</div>
+          <div class="header__dropdown-sub header__dropdown-sub--sabores">
+            <div class="header__dropdown-item">Salado</div>
+            <div class="header__dropdown-item">Dulce</div>
+          </div>
+        </div>
+        <div class="header__dropdown-section">
+          <div class="header__dropdown-title">HORA DE LA COMIDA</div>
+          <div class="header__dropdown-sub header__dropdown-sub--hora">
+            <div class="header__dropdown-item">Desayunos</div>
+            <div class="header__dropdown-item">Comidas</div>
+            <div class="header__dropdown-item">Cenas</div>  
+          </div>
+        </div>
+      </div> -->
+    </header>
+
+    <!-- Main -->
+    <main class="recipe-detail">
+      <h2 class="recipe-detail__title"></h2> 
+
+      <img class="recipe-detail__image" src="" alt="">
+
+      <p class="recipe-detail__description"></p>
+
+      <h3 class="recipe-detail__section-title">INGREDIENTES</h3>
+      <div class="recipe-detail__ingredients">
+          </div>
+
+      <h3 class="recipe-detail__section-title">PASOS</h3>
+      <ol class="recipe-detail__steps">
+          </ol>
+  </main>
+
+    <!-- Sección de comentarios -->
+    <section class="recipe-comments">
+
+      <!-- Recuadro para escribir un comentario -->
+      <div class="recipe-comments__box">
+        <h3 class="recipe-comments__title">Deja tu comentario</h3>
+        <form class="recipe-comments__form">
+          <div class="recipe-comments__row">
+            <label for="rating">Valoración:</label><br>
+            <select id="rating" name="rating" class="recipe-comments__input">
+              <option value="0">0 estrellas</option>
+              <option value="1">1 estrella</option>
+              <option value="2">2 estrellas</option>
+              <option value="3">3 estrellas</option>
+              <option value="4">4 estrellas</option>
+              <option value="5">5 estrellas</option>
+            </select>
+          </div>
+
+          <div class="recipe-comments__row">
+            <label for="comment">Comentario:</label><br>
+            <textarea id="comment" name="comment" class="recipe-comments__input" rows="4" placeholder="Escribe aquí tu comentario..."></textarea>
+          </div>
+
+          <button type="submit" class="recipe-comments__btn">Enviar</button>
+        </form>
+      </div>
+
+      <!-- Recuadro para la lista de comentarios -->
+      <div class="recipe-comments__list">
+        <h3 class="recipe-comments__title">Comentarios anteriores</h3>
+
+        <div class="recipe-comments__item">
+          <p class="recipe-comments__author"><strong>Ana</strong></p>
+          <p class="recipe-comments__meta">28/09/2025 18:30</p>
+          <p class="recipe-comments__stars">⭐⭐⭐⭐⭐</p>
+          <p class="recipe-comments__text">Me encantó la receta, me salió riquísima 😍</p>
+          <hr class="recipe-comments__divider">
+        </div>
+
+        <div class="recipe-comments__item">
+          <p class="recipe-comments__author"><strong>Pedro</strong></p>
+          <p class="recipe-comments__meta">28/09/2025 19:10</p>
+          <p class="recipe-comments__stars">⭐⭐⭐⭐</p>
+          <p class="recipe-comments__text">Probé a ponerle un poco menos de azúcar y quedó genial 👌</p>
+          <hr class="recipe-comments__divider">
+        </div>
+      </div>
+    </section>
+
+    <script type="module" src="/frontend/pages/recipe-detail/index.js"></script>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="site-footer__inner">
+        <!-- Izquierda -->
+        <div class="site-footer__left">
+          &copy; 2025 Recetarizada
+        </div>
+
+        <!-- Centro -->
+        <nav class="site-footer__center" aria-label="Enlaces legales">
+          <a href="/aviso-legal">Aviso Legal</a>
+          <a href="/politica-privacidad">Política de Privacidad</a>
+          <a href="/politica-cookies">Política de Cookies</a>
+        </nav>
+
+        <!-- Derecha: iconos de redes sociales -->
+        <div class="site-footer__right" aria-label="Redes sociales">
+          <a class="site-footer__social-link" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+            <img class="site-footer__social-icon" src="/frontend/pages/imagenes/youtube.png" alt="YouTube">
+          </a>
+          <a class="site-footer__social-link" href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+            <img class="site-footer__social-icon" src="/frontend/pages/imagenes/instagram.png" alt="Instagram">
+          </a>
+          <a class="site-footer__social-link" href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+            <img class="site-footer__social-icon" src="/frontend/pages/imagenes/tiktok.png" alt="TikTok">
+          </a>
+          <a class="site-footer__social-link" href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+            <img class="site-footer__social-icon" src="/frontend/pages/imagenes/twitter.png" alt="Twitter">
+          </a>
+          <a class="site-footer__social-link" href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
+            <img class="site-footer__social-icon" src="/frontend/pages/imagenes/pinterest.png" alt="Pinterest">
+          </a>
+          <a class="site-footer__social-link" href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+            <img class="site-footer__social-icon" src="/frontend/pages/imagenes/facebook.png" alt="Facebook">
+          </a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Añadir receta</title>
+  <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/frontend/pages/create-edit/styles.css">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+  <div class="header__inner">
+    <div class="header__left">
+      <a href="/frontend/pages/home/index.html">
+        <img src="/frontend/pages/imagenes/logo.png" alt="Logo" class="header__logo">
+      </a>
+    </div>
+
+    <nav class="header__nav">
+      <a href="/frontend/pages/list/index.html" class="header__nav-item">RECETAS</a>
+
+      <!-- checkbox antes del label -->
+      <input type="checkbox" id="toggle-filtros" class="header__toggle-filtros" />
+      <label for="toggle-filtros" class="header__nav-item header__nav-item--filtros">FILTROS</label>
+
+      <a href="/frontend/pages/contact/index.html" class="header__nav-item">CONTACTO</a>
+      <a href="/frontend/pages/about/index.html" class="header__nav-item">SOBRE MÍ</a>
+    </nav>
+
+    <div class="header__search">
+      <img src="/frontend/pages/imagenes/lupa.png" alt="Buscar" class="header__search-icon">
+      <input type="text" class="header__search-input" placeholder="   Buscar...">
+    </div>
+
+    <div class="header__right">
+      <a href="/frontend/pages/profile/index.html">
+        <img src="/frontend/pages/imagenes/icono-perfil.png" alt="Perfil" class="header__profile-icon">
+      </a>
+    </div>
+  </div>
+
+  <!-- Menú desplegable
+  <input type="checkbox" id="toggle-filtros" class="header__toggle-filtros" />
+  
+  <div class="header__dropdown">
+    <div class="header__dropdown-section">
+      <div class="header__dropdown-favoritos">FAVORITOS</div>
+      <div class="header__dropdown-guardados">Guardados</div>
+    </div>
+    <div class="header__dropdown-section">
+      <div class="header__dropdown-title">SABORES</div>
+      <div class="header__dropdown-sub header__dropdown-sub--sabores">
+        <div class="header__dropdown-item">Salado</div>
+        <div class="header__dropdown-item">Dulce</div>
+      </div>
+    </div>
+    <div class="header__dropdown-section">
+      <div class="header__dropdown-title">HORA DE LA COMIDA</div>
+      <div class="header__dropdown-sub header__dropdown-sub--hora">
+        <div class="header__dropdown-item">Desayunos</div>
+        <div class="header__dropdown-item">Comidas</div>
+        <div class="header__dropdown-item">Cenas</div>  
+      </div>
+    </div>
+  </div> -->
+</header>
+
+<main class="container">
+  <section class="form-card">
+    <h2 class="form-card__title">Añadir receta</h2>
+    <div class="form-card__body">
+      <div class="form-card__image">
+        <!-- Vista previa de la imagen -->
+        <img id="previewImagen" src="/frontend/pages/imagenes/subir.png" alt="Imagen receta">
+        <input type="file" id="imagenInput" accept="image/*">
+      </div>
+
+      <div class="form-card__content">
+        <label class="form-card__label">Título:</label>
+        <input id="tituloInput" class="form-card__input" placeholder="Escribe aqui..">
+
+        <label class="form-card__label">Descripción:</label>
+        <textarea id="descripcionInput" class="form-card__input form-card__input--autosize" placeholder="Escribe aqui..."></textarea>
+
+        <label class="form-card__label">Ingredientes (uno por línea):</label>
+        <textarea id="ingredientesInput" class="form-card__input form-card__input--autosize" placeholder="Ej: Harina\nHuevos\nLeche"></textarea>
+
+        <label class="form-card__label">Pasos (uno por línea):</label>
+        <textarea id="pasosInput" class="form-card__input form-card__input--autosize" placeholder="Paso 1...\nPaso 2..."></textarea>
+
+        <label class="form-card__label">Categoría:</label>
+        <div class="form-card__categoria">
+          <select id="categoriaSelect" class="form-card__input">
+            <option value="">-- Selecciona una categoría --</option>
+            <option value="Desayuno">Desayuno</option>
+            <option value="Comida">Comida</option>
+            <option value="Cena">Cena</option>
+            <option value="Salado">Salado</option>
+            <option value="Dulce">Dulce</option>
+          </select>
+
+          <!-- Aquí se mostrarán las categorías seleccionadas -->
+          <div id="categoriaSeleccionadas" class="categoria-seleccionadas"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-card__actions">
+      <button class="form-card__button form-card__button--primary" onclick="location.href='/frontend/pages/list/index.html'">Cancelar</button>
+      <button class="form-card__button form-card__button--primary" id="crearRecetaBtn">Crear</button>
+    </div>
+  </section>
+</main>
+
+<script type="module" src="/frontend/pages/create-edit/index.js"></script>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <!-- Izquierda -->
+    <div class="site-footer__left">
+      &copy; 2025 Recetarizada
+    </div>
+
+    <!-- Centro -->
+    <nav class="site-footer__center" aria-label="Enlaces legales">
+      <a href="/frontend/pages/legal/aviso-legal.html">Aviso Legal</a>
+      <a href="/frontend/pages/legal/politica-privacidad.html">Política de Privacidad</a>
+      <a href="/frontend/pages/legal/politica-cookies.html">Política de Cookies</a>
+    </nav>
+
+    <!-- Derecha: iconos de redes sociales -->
+    <div class="site-footer__right" aria-label="Redes sociales">
+      <a class="site-footer__social-link" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+        <img class="site-footer__social-icon" src="/frontend/pages/imagenes/youtube.png" alt="YouTube">
+      </a>
+      <a class="site-footer__social-link" href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <img class="site-footer__social-icon" src="/frontend/pages/imagenes/instagram.png" alt="Instagram">
+      </a>
+      <a class="site-footer__social-link" href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+        <img class="site-footer__social-icon" src="/frontend/pages/imagenes/tiktok.png" alt="TikTok">
+      </a>
+      <a class="site-footer__social-link" href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+        <img class="site-footer__social-icon" src="/frontend/pages/imagenes/twitter.png" alt="Twitter">
+      </a>
+      <a class="site-footer__social-link" href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
+        <img class="site-footer__social-icon" src="/frontend/pages/imagenes/pinterest.png" alt="Pinterest">
+      </a>
+      <a class="site-footer__social-link" href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+        <img class="site-footer__social-icon" src="/frontend/pages/imagenes/facebook.png" alt="Facebook">
+      </a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
