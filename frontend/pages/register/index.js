@@ -25,7 +25,7 @@ formRegistro.addEventListener("submit", async (e) => {
     try {
         await crearUsuario({ email, password, name });
         alert("✅ Tu cuenta ha sido creada correctamente");
-        window.location.href = "../home/index.html";
+        window.location.href = "/frontend/pages/home/index.html";
     } catch (error) {
         alert("❌ No se pudo crear la cuenta. " + (error.userMessage || error.message));
     }

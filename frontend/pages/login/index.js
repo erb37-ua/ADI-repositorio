@@ -22,7 +22,7 @@ formLogin.addEventListener("submit", async (e) => {
 
         // Redirigir al perfil
         alert("✅ Sesión iniciada correctamente");
-        window.location.href = "../profile/index.html";
+        window.location.href = "/frontend/pages/profile/index.html";
     } catch (error) {
         alert("❌ " + (error.message || "No se pudo iniciar sesión."));
     }

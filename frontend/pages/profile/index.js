@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!usuario) {
         alert("⚠️ Debes iniciar sesión para ver tu perfil.");
-        window.location.href = "../login/index.html";
+        window.location.href = "/frontend/pages/login/index.html";
         return;
     }
 
@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Cerrar sesión
     btnCerrar.addEventListener("click", () => {
         cerrarSesion();
-        window.location.href = "../login/index.html";
+        window.location.href = "/frontend/pages/login/index.html";
     });
 
     // Eliminar cuenta
@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
             await eliminarUsuario(usuario.id);
             cerrarSesion();
             alert("✅ Cuenta eliminada correctamente");
-            window.location.href = "../login/index.html";
+            window.location.href = "/frontend/pages/login/index.html";
         } catch (err) {
             console.error(err);
             alert("❌ No se pudo eliminar la cuenta: " + err.message);

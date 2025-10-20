@@ -8,10 +8,9 @@
   --maxw:720px;
   --pad:24px;
   --footer-h:56px;
-  font-family: 'Itim';
 }
 
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;font-family: 'Itim';}
 body{background:var(--bg); color:#111; line-height:1.4; padding-top:72px; font-size: 18px;}
 
 main {flex: 1;}
