@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Iniciar sesión</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+<!-- Header -->
+<header class="header">
+  <div class="header__inner">
+    <div class="header__left">
+      <a href="../home/index.html">
+        <img src="../imagenes/logo.png" alt="Logo" class="header__logo">
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="login">
+  <section class="login-card">
+    <h2 class="login-card__title">Iniciar sesión</h2>
+
+    <!-- Formulario -->
+    <form id="formLogin">
+      <!-- Correo -->
+      <div class="login-card__form-row login-card__form-row--icon">
+        <label for="correo" class="login-card__label">Correo electrónico</label>
+        <i class="login-card__icon fa-solid fa-envelope"></i>
+        <input id="correo" name="correo" class="login-card__input" placeholder="ejemplo@gmail.com" type="email" required>
+      </div>
+
+      <!-- Contraseña -->
+      <div class="login-card__form-row login-card__form-row--icon">
+        <label for="password" class="login-card__label">Contraseña</label>
+        <i class="login-card__icon fa-solid fa-lock"></i>
+        <input id="password" name="password" class="login-card__input" placeholder="**********************" type="password" required>
+      </div>
+
+      <!-- Contraseña olvidada -->
+      <div class="login-card__form-row">
+        <a href="#" class="login-card__link login-card__link--forgot">¿Contraseña olvidada?</a>
+      </div>
+
+      <!-- Botón iniciar -->
+      <div class="login-card__form-row">
+        <button type="submit" id="btnLogin" class="login-card__button">
+          <i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión
+        </button>
+      </div>
+
+      <!-- Recuérdame -->
+      <div class="login-card__form-row">
+        <label class="login-card__remember">
+          <input type="checkbox" id="recordarme"> Recuérdame
+        </label>
+      </div>
+
+      <!-- Separador -->
+      <div class="login-card__separator">o</div>
+
+      <!-- Botón Google y registro -->
+      <div class="login-card__form-row">
+        <button type="button" class="login-card__button login-card__button--google">
+          <i class="fa-brands fa-google"></i> Continúa con Google
+        </button>
+        <a href="../register/index.html" class="login-card__link login-card__link--register">¿No tienes cuenta? Regístrate</a>
+      </div>
+    </form>
+  </section>
+</main>
+
+<script type="module" src="./index.js"></script>
+
+<!-- Footer -->
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__left">&copy; 2025 Recetarizada</div>
+    <nav class="site-footer__center" aria-label="Enlaces legales">
+      <a href="/aviso-legal">Aviso Legal</a>
+      <a href="/politica-privacidad">Política de Privacidad</a>
+      <a href="/politica-cookies">Política de Cookies</a>
+    </nav>
+    <div class="site-footer__right" aria-label="Redes sociales">
+      <a class="site-footer__social-link" href="https://www.youtube.com" target="_blank" aria-label="YouTube">
+        <img class="site-footer__social-icon" src="../imagenes/youtube.png" alt="YouTube">
+      </a>
+      <a class="site-footer__social-link" href="https://www.instagram.com" target="_blank" aria-label="Instagram">
+        <img class="site-footer__social-icon" src="../imagenes/instagram.png" alt="Instagram">
+      </a>
+      <a class="site-footer__social-link" href="https://www.tiktok.com" target="_blank" aria-label="TikTok">
+        <img class="site-footer__social-icon" src="../imagenes/tiktok.png" alt="TikTok">
+      </a>
+      <a class="site-footer__social-link" href="https://www.twitter.com" target="_blank" aria-label="Twitter">
+        <img class="site-footer__social-icon" src="../imagenes/twitter.png" alt="Twitter">
+      </a>
+      <a class="site-footer__social-link" href="https://www.pinterest.com" target="_blank" aria-label="Pinterest">
+        <img class="site-footer__social-icon" src="../imagenes/pinterest.png" alt="Pinterest">
+      </a>
+      <a class="site-footer__social-link" href="https://www.facebook.com" target="_blank" aria-label="Facebook">
+        <img class="site-footer__social-icon" src="../imagenes/facebook.png" alt="Facebook">
+      </a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
