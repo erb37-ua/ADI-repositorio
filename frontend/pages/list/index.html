@@ -4,37 +4,37 @@
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
   <title>Mis recetas</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/frontend/pages/list/styles.css">
 </head>
 <body>
   <!-- Header -->
   <header class="header">
     <div class="header__inner">
       <div class="header__left">
-        <a href="../home/index.html">
-          <img src="../imagenes/logo.png" alt="Logo" class="header__logo">
+        <a href="/frontend/pages/home/index.html">
+          <img src="/frontend/pages/imagenes/logo.png" alt="Logo" class="header__logo">
         </a>
       </div>
 
       <nav class="header__nav">
-        <a href="../list/index.html" class="header__nav-item">RECETAS</a>
+        <a href="/frontend/pages/list/index.html" class="header__nav-item">RECETAS</a>
 
         <!-- checkbox antes del label -->
         <input type="checkbox" id="toggle-filtros" class="header__toggle-filtros" />
         <label for="toggle-filtros" class="header__nav-item header__nav-item--filtros">FILTROS</label>
 
-        <a href="../contact/index.html" class="header__nav-item">CONTACTO</a>
-        <a href="../about/index.html" class="header__nav-item">SOBRE MÍ</a>
+        <a href="/frontend/pages/contact/index.html" class="header__nav-item">CONTACTO</a>
+        <a href="/frontend/pages/about/index.html" class="header__nav-item">SOBRE MÍ</a>
       </nav>
 
       <div class="header__search">
-        <img src="../imagenes/lupa.png" alt="Buscar" class="header__search-icon">
+        <img src="/frontend/pages/imagenes/lupa.png" alt="Buscar" class="header__search-icon">
         <input type="text" class="header__search-input" placeholder="   Buscar...">
       </div>
 
       <div class="header__right">
-        <a href="../profile/index.html">
-          <img src="../imagenes/icono-perfil.png" alt="Perfil" class="header__profile-icon">
+        <a href="/frontend/pages/profile/index.html">
+          <img src="/frontend/pages/imagenes/icono-perfil.png" alt="Perfil" class="header__profile-icon">
         </a>
       </div>
     </div>
@@ -68,30 +68,32 @@
   <main class="recipes">
     <div class="recipes__controls">
       <select class="recipes__filter">
-        <option value="">Filtrar</option>
-        <option value="entrante">Entrante</option>
-        <option value="principal">Principal</option>
-        <option value="postre">Postre</option>
+        <option value="">Todo</option>
+        <option value="desayuno">Desayuno</option>
+        <option value="comida">Comida</option>
+        <option value="cena">Cena</option>
+        <option value="salado">Salado</option>
+        <option value="dulce">Dulce</option>
       </select>
 
-      <button class="recipes__button" onclick="location.href='../create-edit/index.html'">Añadir receta</button>
+      <button class="recipes__button" onclick="location.href='/frontend/pages/create-edit/index.html'">Añadir receta</button>
     </div>
 
     <div class="recipes__list">
       <div class="recipes__card">
-        <img src="../imagenes/comida.jpeg" alt="" class="recipes__card-image">
+        <img src="/frontend/pages/imagenes/comida.jpeg" alt="" class="recipes__card-image">
         <div class="recipes__card-info">
           <h3 class="recipes__card-title">Título</h3>
           <p class="recipes__card-description">Receta de pasta...</p>
         </div>
         <div class="recipes__card-actions">
-          <button class="recipes__card-button" onclick="location.href='../create-edit/index.html'">Editar</button>
+          <button class="recipes__card-button" onclick="location.href='/frontend/pages/create-edit/index.html'">Editar</button>
           <button class="recipes__card-button">Eliminar</button>
         </div>
       </div>
 
       <div class="recipes__card">
-        <img src="../imagenes/comida1.jpg" alt="" class="recipes__card-image">
+        <img src="/frontend/pages/imagenes/comida1.jpg" alt="" class="recipes__card-image">
         <div class="recipes__card-info">
           <h3 class="recipes__card-title">Título</h3>
           <p class="recipes__card-description">Receta de pasta...</p>
@@ -130,22 +132,22 @@
       <!-- Derecha: iconos de redes sociales -->
       <div class="site-footer__right" aria-label="Redes sociales">
         <a class="site-footer__social-link" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-          <img class="site-footer__social-icon" src="../imagenes/youtube.png" alt="YouTube">
+          <img class="site-footer__social-icon" src="/frontend/pages/imagenes/youtube.png" alt="YouTube">
         </a>
         <a class="site-footer__social-link" href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-          <img class="site-footer__social-icon" src="../imagenes/instagram.png" alt="Instagram">
+          <img class="site-footer__social-icon" src="/frontend/pages/imagenes/instagram.png" alt="Instagram">
         </a>
         <a class="site-footer__social-link" href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
-          <img class="site-footer__social-icon" src="../imagenes/tiktok.png" alt="TikTok">
+          <img class="site-footer__social-icon" src="/frontend/pages/imagenes/tiktok.png" alt="TikTok">
         </a>
         <a class="site-footer__social-link" href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-          <img class="site-footer__social-icon" src="../imagenes/twitter.png" alt="Twitter">
+          <img class="site-footer__social-icon" src="/frontend/pages/imagenes/twitter.png" alt="Twitter">
         </a>
         <a class="site-footer__social-link" href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
-          <img class="site-footer__social-icon" src="../imagenes/pinterest.png" alt="Pinterest">
+          <img class="site-footer__social-icon" src="/frontend/pages/imagenes/pinterest.png" alt="Pinterest">
         </a>
         <a class="site-footer__social-link" href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-          <img class="site-footer__social-icon" src="../imagenes/facebook.png" alt="Facebook">
+          <img class="site-footer__social-icon" src="/frontend/pages/imagenes/facebook.png" alt="Facebook">
         </a>
       </div>
     </div>
