@@ -72,42 +72,45 @@
   <section class="profile-card">
     <h2 class="profile-card__title">Perfil</h2>
 
-    <div class="profile-card__row">
-      <label for="nombre" class="profile-card__label">Nombre</label>
-      <div class="profile-card__input-icon">
-        <i class="profile-card__icon fa-solid fa-user"></i>
-        <input id="nombre" class="profile-card__input" type="text" placeholder="Tu nombre" value="Juan Pérez">
+    <form id="formPerfil" novalidate>
+      <div class="profile-card__row">
+        <label for="nombre" class="profile-card__label">Nombre</label>
+        <div class="profile-card__input-icon">
+          <i class="profile-card__icon fa-solid fa-user"></i>
+          <input id="nombre" class="profile-card__input" type="text" placeholder="Tu nombre" required>
+        </div>
       </div>
-    </div>
 
-    <div class="profile-card__row">
-      <label for="correo" class="profile-card__label">Correo electrónico</label>
-      <div class="profile-card__input-icon">
-        <i class="profile-card__icon fa-solid fa-envelope"></i>
-        <input id="correo" class="profile-card__input" type="email" placeholder="ejemplo@gmail.com" value="ejemplo@gmail.com">
+      <div class="profile-card__row">
+        <label for="correo" class="profile-card__label">Correo electrónico</label>
+        <div class="profile-card__input-icon">
+          <i class="profile-card__icon fa-solid fa-envelope"></i>
+          <input id="correo" class="profile-card__input" type="email" placeholder="ejemplo@gmail.com" disabled>
+        </div>
       </div>
-    </div>
 
-    <div class="profile-card__row">
-      <label for="pass" class="profile-card__label">Contraseña</label>
-      <div class="profile-card__input-icon">
-        <i class="profile-card__icon fa-solid fa-lock"></i>
-        <input id="pass" class="profile-card__input" type="password" placeholder="********">
+      <div class="profile-card__row">
+        <label for="pass" class="profile-card__label">Contraseña</label>
+        <div class="profile-card__input-icon">
+          <i class="profile-card__icon fa-solid fa-lock"></i>
+          <input id="pass" class="profile-card__input" type="password" placeholder="********">
+        </div>
       </div>
-    </div>
 
-    <div class="profile-card__row">
-      <label for="pass2" class="profile-card__label">Repetir contraseña</label>
-      <div class="profile-card__input-icon">
-        <i class="profile-card__icon fa-solid fa-lock"></i>
-        <input id="pass2" class="profile-card__input" type="password" placeholder="********">
+      <div class="profile-card__row">
+        <label for="pass2" class="profile-card__label">Repetir contraseña</label>
+        <div class="profile-card__input-icon">
+          <i class="profile-card__icon fa-solid fa-lock"></i>
+          <input id="pass2" class="profile-card__input" type="password" placeholder="********">
+        </div>
       </div>
-    </div>
 
-    <div class="profile-card__row profile-card__buttons">
-      <button class="profile-card__btn">Guardar cambios</button>
-      <button class="profile-card__btn" onclick="location.href='/frontend/pages/home/index.html'">Cerrar sesión</button>
-    </div>
+      <div class="profile-card__row profile-card__buttons">
+        <button type="submit" class="profile-card__btn">Guardar cambios</button>
+        <button type="button" class="profile-card__btn" id="btnCerrarSesion">Cerrar sesión</button>
+      </div>
+    </form>
+
 
     <div class="profile-card__row profile-card__delete">
       <button class="profile-card__btn profile-card__btn--danger">Eliminar cuenta</button>
