@@ -4,7 +4,8 @@ migrate((app) => {
 
   // update collection data
   unmarshal({
-    "createRule": ""
+    "deleteRule": "",
+    "updateRule": ""
   }, collection)
 
   return app.save(collection)
@@ -13,7 +14,8 @@ migrate((app) => {
 
   // update collection data
   unmarshal({
-    "createRule": null
+    "deleteRule": null,
+    "updateRule": null
   }, collection)
 
   return app.save(collection)

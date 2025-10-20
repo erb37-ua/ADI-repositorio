@@ -1,6 +1,5 @@
 // login/index.js
 import { iniciarSesion } from "../../services/usuarios.js";
-import { pb } from "../../services/pb.js";
 
 const formLogin = document.getElementById("formLogin");
 const inputCorreo = document.getElementById("correo");

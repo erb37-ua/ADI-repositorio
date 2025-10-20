@@ -1,5 +1,5 @@
 // Importa PocketBase desde un CDN que ofrece el módulo ES
-import PocketBase from "https://cdn.jsdelivr.net/npm/pocketbase@0.21.1/dist/pocketbase.es.mjs";
+import PocketBase from 'https://cdn.jsdelivr.net/npm/pocketbase@latest/dist/pocketbase.es.js';
 
 // Singleton: una sola instancia de PocketBase para toda la app
 export const pb = new PocketBase("http://127.0.0.1:8090"); // Ajusta la URL si es distinta

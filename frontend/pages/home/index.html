@@ -71,59 +71,12 @@
     </div> -->
   </header>
 
+  <!-- Main Content -->
   <main class="container">
-    <div class="grid">
-      <article class="card">
-        <a href="/frontend/pages/recipe-detail/index.html">
-          <img src="/frontend/pages/imagenes/comida1.jpg" alt="" class="card__image">
-        </a>
-        
-        <div class="card__title-row">
-          <a href="/frontend/pages/recipe-detail/index.html" class="card__link">
-            <h4 class="card__title">Arrocito con carne</h4>
-          </a>
-          <input type="checkbox" id="like1" class="card__like-check">
-          <label for="like1" class="card__like-label">
-            <i class="fa-solid fa-heart"></i>
-          </label>
-        </div>
-        
-        <p class="card__comments">7 comentarios</p>
-      </article>
-
-      <article class="card">
-        <a href="/frontend/pages/recipe-detail/index.html">
-          <img src="/frontend/pages/imagenes/comida.jpeg" alt="" class="card__image">
-        </a>
-        <div class="card__title-row">
-          <a href="/frontend/pages/recipe-detail/index.html" class="card__link">
-            <h4 class="card__title">Cinnamon rolls</h4>
-          </a>
-          <input type="checkbox" id="like2" class="card__like-check">
-          <label for="like2" class="card__like-label">
-            <i class="fa-solid fa-heart"></i>
-          </label>
-        </div>
-        <p class="card__comments">7 comentarios</p>
-      </article>
-
-      <article class="card">
-        <a href="/frontend/pages/recipe-detail/index.html">
-          <img src="/frontend/pages/imagenes/comida1.jpg" alt="" class="card__image">
-        </a>
-        <div class="card__title-row">
-          <a href="/frontend/pages/recipe-detail/index.html" class="card__link">
-            <h4 class="card__title">Arrocito con carne</h4>
-          </a>
-          <input type="checkbox" id="like3" class="card__like-check">
-          <label for="like3" class="card__like-label">
-            <i class="fa-solid fa-heart"></i>
-          </label>
-        </div>
-        <p class="card__comments">2 comentarios</p>
-      </article>
+    <div id="gridRecetas" class="grid">
+      <!-- Las tarjetas se insertarán aquí desde JS -->
     </div>
-    
+
     <div class="add-card">
       <button class="add-card__button" title="Añadir receta" onclick="location.href='/frontend/pages/create-edit/index.html'">
         <i class="fa-solid fa-circle-plus"></i>
@@ -131,44 +84,45 @@
     </div>
   </main>
 
+  <script type="module" src="/frontend/pages/home/index.js"></script>
+
   <!-- Footer -->
   <footer class="site-footer">
-      <div class="site-footer__inner">
-          <!-- Izquierda -->
-          <div class="site-footer__left">
-          &copy; 2025 Recetarizada
-          </div>
-
-          <!-- Centro -->
-          <nav class="site-footer__center" aria-label="Enlaces legales">
-          <a href="/frontend/pages/legal/aviso-legal.html">Aviso Legal</a>
-          <a href="/frontend/pages/legal/politica-privacidad.html">Política de Privacidad</a>
-          <a href="/frontend/pages/legal/politica-cookies.html">Política de Cookies</a>
-          </nav>
-
-          <!-- Derecha: iconos de redes sociales -->
-          <div class="site-footer__right" aria-label="Redes sociales">
-          <a class="site-footer__social-link" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-              <img class="site-footer__social-icon" src="/frontend/pages/imagenes/youtube.png" alt="YouTube">
-          </a>
-          <a class="site-footer__social-link" href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-              <img class="site-footer__social-icon" src="/frontend/pages/imagenes/instagram.png" alt="Instagram">
-          </a>
-          <a class="site-footer__social-link" href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
-              <img class="site-footer__social-icon" src="/frontend/pages/imagenes/tiktok.png" alt="TikTok">
-          </a>
-          <a class="site-footer__social-link" href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
-              <img class="site-footer__social-icon" src="/frontend/pages/imagenes/twitter.png" alt="Twitter">
-          </a>
-          <a class="site-footer__social-link" href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
-              <img class="site-footer__social-icon" src="/frontend/pages/imagenes/pinterest.png" alt="Pinterest">
-          </a>
-          <a class="site-footer__social-link" href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
-              <img class="site-footer__social-icon" src="/frontend/pages/imagenes/facebook.png" alt="Facebook">
-          </a>
-          </div>
+    <div class="site-footer__inner">
+      <!-- Izquierda -->
+      <div class="site-footer__left">
+        &copy; 2025 Recetarizada
       </div>
-      </footer>
 
-  </body>
+      <!-- Centro -->
+      <nav class="site-footer__center" aria-label="Enlaces legales">
+        <a href="/aviso-legal">Aviso Legal</a>
+        <a href="/politica-privacidad">Política de Privacidad</a>
+        <a href="/politica-cookies">Política de Cookies</a>
+      </nav>
+
+      <!-- Derecha: iconos de redes sociales -->
+      <div class="site-footer__right" aria-label="Redes sociales">
+        <a class="site-footer__social-link" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+          <img class="site-footer__social-icon" src="/frontend/pages/imagenes/youtube.png" alt="YouTube">
+        </a>
+        <a class="site-footer__social-link" href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <img class="site-footer__social-icon" src="/frontend/pages/imagenes/instagram.png" alt="Instagram">
+        </a>
+        <a class="site-footer__social-link" href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok">
+          <img class="site-footer__social-icon" src="/frontend/pages/imagenes/tiktok.png" alt="TikTok">
+        </a>
+        <a class="site-footer__social-link" href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter">
+          <img class="site-footer__social-icon" src="/frontend/pages/imagenes/twitter.png" alt="Twitter">
+        </a>
+        <a class="site-footer__social-link" href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" aria-label="Pinterest">
+          <img class="site-footer__social-icon" src="/frontend/pages/imagenes/pinterest.png" alt="Pinterest">
+        </a>
+        <a class="site-footer__social-link" href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+          <img class="site-footer__social-icon" src="/frontend/pages/imagenes/facebook.png" alt="Facebook">
+        </a>
+      </div>
+    </div>
+  </footer>
+</body>
 </html>
