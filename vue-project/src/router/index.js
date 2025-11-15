@@ -12,10 +12,57 @@ const router = createRouter({
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
       component: () => import('../views/AboutView.vue'),
+    },
+    {
+      path: '/contact',
+      name: 'contact',
+      component: () => import('../views/ContactView.vue'),
+    },
+    {
+      path: '/legal',
+      name: 'legal',
+      component: () => import('../views/legal/LegalView.vue'),
+    },
+    {
+      path: '/cookies',
+      name: 'cookies',
+      component: () => import('../views/legal/CookiesView.vue'),
+    },
+    {
+      path: '/privacidad',
+      name: 'privacidad',
+      component: () => import('../views/legal/PrivacidadView.vue'),
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('../views/RegisterView.vue'),
+    },
+    {
+      path: '/create-edit',
+      name: 'create-edit',
+      component: () => import('../views/CreateEditView.vue'),
+    },
+    {
+      path: '/list',
+      name: 'list',
+      component: () => import('../views/ListView.vue'),
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: () => import('../views/LoginView.vue'),
+    },
+    {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../views/ProfileView.vue'),
+    },
+    {
+      path: '/recipe-detail',
+      name: 'recipe-detail',
+      component: () => import('../views/RecipeDetailView.vue'),
     },
   ],
 })
