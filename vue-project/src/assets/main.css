@@ -1,13 +1,57 @@
 @import './base.css';
+@import "https://fonts.googleapis.com/css2?family=Itim&display=swap";
 
-#app {
-  width: 100%;
-  max-width: none;
-  margin: 0;
-  padding: 0; /* o lo que tú quieras */
-  font-weight: normal;
+/* VARIABLES GLOBALES (PALETA DE COLORES) */
+/* :root define variables CSS que podemos usar en toda la web. */
+:root {
+  --accent: #c65a48;
+  --dark: #2b5b5b;
+  --bg: #fbf8f6;
+  --card: #fff;
+  --radius: 14px;
+  --maxw: 720px;
+  --pad: 24px;
+  --footer-h: 56px;
 }
 
+/* ESTILOS BASE DEL BODY */
+body {
+  margin: 0; /* Limpia márgenes por defecto del navegador */
+  padding: 0;
+  width: 100%;
+  
+  background: var(--bg); /* Asigna tu color de fondo */
+  color: #111; /* Asigna el color de texto principal */
+
+  /* Asigna la fuente global a toda la web */
+  font-family: "Itim", sans-serif;
+}
+
+/* LAYOUT PRINCIPAL DE LA APP (#app) */
+/* #app es el contenedor raíz de Vue */
+#app {
+  display: flex; /* Activa Flexbox */
+  flex-direction: column; /* Apila los hijos (Header, Main, Footer) verticalmente */
+  min-height: 100vh; /* Ocupa AL MENOS el 100% de la altura de la ventana */
+  
+  width: 100%; /* Ocupa todo el ancho */
+  max-width: none; /* Anula cualquier max-width de base.css */
+  margin: 0;
+  padding: 0;
+  font-weight: normal;
+  
+  background: transparent; /* Fondo transparente (se verá el del body) */
+}
+
+/* CONTENIDO PRINCIPAL (MAIN) */
+main {
+  /* Hace que 'main' crezca y ocupe el espacio sobrante,
+     empujando al Footer siempre hacia abajo */
+  flex: 1;
+}
+
+/* ENLACES (ESTILOS GLOBALES DE VUE) */
+/* Estos estilos vienen con el 'base.css' de Vue */
 a,
 .green {
   text-decoration: none;
@@ -22,6 +66,9 @@ a,
   }
 }
 
+/* SOBRESCRITURA PARA ESCRITORIO */
+/* Anulamos los estilos de 'base.css' en pantallas grandes
+   para asegurar que #app siga siendo 100% ancho y flex. */
 @media (min-width: 1024px) {
   body {
     display: block;
@@ -29,8 +76,11 @@ a,
   }
 
   #app {
-    display: block;
+    display: flex; 
+    max-width: none;
+    width: 100%;
     padding: 0;
+    place-items: unset;
+    padding-right: 0; 
   }
 }
-
