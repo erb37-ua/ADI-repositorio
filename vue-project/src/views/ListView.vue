@@ -1,59 +1,59 @@
 <script setup>
-import { ref, computed } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+    import { ref, computed } from 'vue'
+    import { RouterLink, useRouter } from 'vue-router'
 
-const router = useRouter()
+    const router = useRouter()
 
-// Datos simulados
-const recipes = ref([
-    {
-        id: 1,
-        title: 'Tostadas francesas con miel',
-        description: 'Pan empapado en huevo, dorado a la plancha y servido con miel y fruta fresca.',
-        category: 'Desayuno',
-        image: '/receta1.jpg',
-        showDetails: false
-    },
-    {
-        id: 2,
-        title: 'Ensalada de quinoa y aguacate',
-        description: 'Quinoa, verduras frescas y aguacate con aliño de limón y aceite de oliva.',
-        category: 'Comida',
-        image: '/receta2.jpg',
-        showDetails: false
-    },
-    {
-        id: 3,
-        title: 'Crema de calabaza asada',
-        description: 'Calabaza asada, cebolla y zanahoria trituradas con caldo suave y un toque de nata.',
-        category: 'Cena',
-        image: '/receta3.jpg',
-        showDetails: false
-    },
-    {
-        id: 4,
-        title: 'Brownie de chocolate',
-        description: 'Bizcocho denso de chocolate con nueces, perfecto para los amantes del dulce.',
-        category: 'Dulce',
-        image: '/receta4.jpg',
-        showDetails: false
-    },
-    {
-        id: 5,
-        title: 'Empanadillas de atún al horno',
-        description: 'Masa crujiente rellena de atún, tomate y huevo duro, horneada hasta dorar.',
-        category: 'Salado',
-        image: '/receta5.jpg',
-        showDetails: false
-    },
-    {
-        id: 6,
-        title: 'Yogur con granola y fruta',
-        description: 'Vaso de yogur natural con granola casera y frutas de temporada.',
-        category: 'Desayuno',
-        image: '/receta6.jpg',
-        showDetails: false
-    }
+    // Datos simulados
+    const recipes = ref([
+        {
+            id: 1,
+            title: 'Tostadas francesas con miel',
+            description: 'Pan empapado en huevo, dorado a la plancha y servido con miel y fruta fresca.',
+            category: 'Desayuno',
+            image: '/receta1.jpg',
+            showDetails: false
+        },
+        {
+            id: 2,
+            title: 'Ensalada de quinoa y aguacate',
+            description: 'Quinoa, verduras frescas y aguacate con aliño de limón y aceite de oliva.',
+            category: 'Comida',
+            image: '/receta2.jpg',
+            showDetails: false
+        },
+        {
+            id: 3,
+            title: 'Crema de calabaza asada',
+            description: 'Calabaza asada, cebolla y zanahoria trituradas con caldo suave y un toque de nata.',
+            category: 'Cena',
+            image: '/receta3.jpg',
+            showDetails: false
+        },
+        {
+            id: 4,
+            title: 'Brownie de chocolate',
+            description: 'Bizcocho denso de chocolate con nueces, perfecto para los amantes del dulce.',
+            category: 'Dulce',
+            image: '/receta4.jpg',
+            showDetails: false
+        },
+        {
+            id: 5,
+            title: 'Empanadillas de atún al horno',
+            description: 'Masa crujiente rellena de atún, tomate y huevo duro, horneada hasta dorar.',
+            category: 'Salado',
+            image: '/receta5.jpg',
+            showDetails: false
+        },
+        {
+            id: 6,
+            title: 'Yogur con granola y fruta',
+            description: 'Vaso de yogur natural con granola casera y frutas de temporada.',
+            category: 'Desayuno',
+            image: '/receta6.jpg',
+            showDetails: false
+        }
     ])
 
     const filterCategory = ref('')
@@ -61,73 +61,48 @@ const recipes = ref([
     const pageSize = 4
 
     const filteredRecipes = computed(() =>
-    filterCategory.value
-        ? recipes.value.filter(r => r.category === filterCategory.value)
-        : recipes.value
+        filterCategory.value
+            ? recipes.value.filter(r => r.category === filterCategory.value)
+            : recipes.value
     )
 
     const totalPages = computed(() =>
-    Math.max(1, Math.ceil(filteredRecipes.value.length / pageSize))
+        Math.max(1, Math.ceil(filteredRecipes.value.length / pageSize))
     )
 
     const paginatedRecipes = computed(() => {
-    const start = (currentPage.value - 1) * pageSize
-    return filteredRecipes.value.slice(start, start + pageSize)
+        const start = (currentPage.value - 1) * pageSize
+        return filteredRecipes.value.slice(start, start + pageSize)
     })
 
     const changeFilter = (event) => {
-    filterCategory.value = event.target.value
-    currentPage.value = 1
+        filterCategory.value = event.target.value
+        currentPage.value = 1
     }
 
     const setPage = (page) => {
-    if (page < 1 || page > totalPages.value) return
-    currentPage.value = page
+        if (page < 1 || page > totalPages.value) return
+        currentPage.value = page
     }
 
     const handleDelete = (id) => {
-    recipes.value = recipes.value.filter(r => r.id !== id)
-    if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
+        recipes.value = recipes.value.filter(r => r.id !== id)
+        if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
     }
 
     const handleEdit = (id) => {
-    // En el futuro podrías pasar el id por query/params
-    console.log('Editar receta con id:', id)
-    router.push('/create-edit')
+        // En el futuro podrías pasar el id por query/params
+        console.log('Editar receta con id:', id)
+        router.push('/create-edit')
     }
 
     const toggleDetails = (recipe) => {
-    recipe.showDetails = !recipe.showDetails
+        recipe.showDetails = !recipe.showDetails
     }
-    </script>
+</script>
 
-    <template>
-    <div>
-        <!-- Header -->
-        <header class="header">
-        <div class="header__inner">
-            <div class="header__left">
-                <RouterLink to="/"><img src="/logo.png" alt="Logo" class="header__logo" /></RouterLink>
-                </div>
-                <nav class="header__nav">
-                <RouterLink to="/list" class="header__nav-item">RECETAS</RouterLink>
-                <input type="checkbox" id="toggle-filtros" class="header__toggle-filtros" />
-                <label for="toggle-filtros" class="header__nav-item header__nav-item--filtros">FILTROS</label>
-                <RouterLink to="/contact" class="header__nav-item">CONTACTO</RouterLink>
-                <RouterLink to="/about" class="header__nav-item">SOBRE MÍ</RouterLink>
-                </nav>
-                <div class="header__search">
-                <img src="/lupa.png" alt="Buscar" class="header__search-icon" />
-                <input type="text" class="header__search-input" placeholder="   Buscar..." />
-                </div>
-                <div class="header__right">
-                <span><img src="/icono-perfil.png" alt="Perfil" class="header__profile-icon" /></span>
-            </div>
-        </div>
-        </header>
-
-        <!-- Main -->
-        <main class="recipes">
+<template>
+    <div class="recipes">
         <div class="recipes__controls">
             <select class="recipes__filter" :value="filterCategory" @change="changeFilter">
             <option value="">Todo</option>
@@ -173,77 +148,138 @@ const recipes = ref([
             </button>
             <button type="button" class="recipes__page-link" @click="setPage(currentPage + 1)">»</button>
         </nav>
-        </main>
-
-        <!-- Footer -->
-        <footer class="site-footer">
-        <div class="site-footer__inner">
-            <div class="site-footer__left">&copy; 2025 Recetarizada</div>
-            <nav class="site-footer__center" aria-label="Enlaces legales">
-            <RouterLink to="/legal/aviso-legal">Aviso Legal</RouterLink>
-            <RouterLink to="/legal/politica-privacidad">Política de Privacidad</RouterLink>
-            <RouterLink to="/legal/politica-cookies">Política de Cookies</RouterLink>
-            </nav>
-            <div class="site-footer__right" aria-label="Redes sociales">
-            <a class="site-footer__social-link" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube"><img class="site-footer__social-icon" src="/youtube.png" alt="YouTube" /></a>
-            <a class="site-footer__social-link" href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><img class="site-footer__social-icon" src="/instagram.png" alt="Instagram" /></a>
-            <a class="site-footer__social-link" href="https://www.tiktok.com" target="_blank" rel="noopener noreferrer" aria-label="TikTok"><img class="site-footer__social-icon" src="/tiktok.png" alt="TikTok" /></a>
-            <a class="site-footer__social-link" href="https://www.twitter.com" target="_blank" rel="noopener noreferrer" aria-label="Twitter"><img class="site-footer__social-icon" src="/twitter.png" alt="Twitter" /></a>
-            <a class="site-footer__social-link" href="https://www.pinterest.com" target="_blank" rel="noopener noreferrer" aria-label="Pinterest"><img class="site-footer__social-icon" src="/pinterest.png" alt="Pinterest" /></a>
-            <a class="site-footer__social-link" href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><img class="site-footer__social-icon" src="/facebook.png" alt="Facebook" /></a>
-            </div>
-        </div>
-        </footer>
     </div>
 </template>
 
-<style>
-:root{--accent:#c65a48;--dark:#2b5b5b;--bg:#fbf8f6;--card:#fff;--radius:20px;--pad:24px;--footer-h:56px;}
-*{box-sizing:border-box;margin:0;padding:0;font-family:'Itim';}
-body{background:var(--bg);color:#111;line-height:1.4;display:flex;flex-direction:column;min-height:100%;}
-main{flex:1;}
-html,body{height:100%;}
-.header{width:100%;height:134px;padding:8px;background:#D2694C;border:1px solid #C9A66B;box-sizing:border-box;position:fixed;top:0;left:0;z-index:1000;}
-.header__inner{display:flex;align-items:center;justify-content:space-between;width:100%;height:100%;padding:0 16px;box-sizing:border-box;}
-.header__left{display:flex;align-items:center;}
-.header__logo{width:77px;height:77px;}
-.header__nav{display:flex;gap:40px;margin-left:0;white-space:nowrap;}
-.header__nav-item{width:auto;height:36px;color:#000000;font-family:'Itim';font-weight:400;font-size:26px;text-align:left;text-decoration:none;}
-.header__nav-item--filtros{cursor:pointer;width:98px;}
-.header__search{display:flex;align-items:center;background:#C9A66B;border:1px solid #000000;border-radius:32px;padding:0 12px;height:40px;width:400px;}
-.header__search-input{border:none;background:transparent;width:100%;font-family:'Itim';font-size:18px;margin-left:8px;}
-.header__search-icon{width:20px;height:20px;}
-.header__right{display:flex;align-items:center;}
-.header__profile-icon{width:57px;height:57px;}
-.header__toggle-filtros{position:absolute;left:-9999px;}
-.site-footer{background:#D2694C;color:#000000;padding:16px 0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;font-size:14px;margin-top:auto;width:100%;}
-.site-footer__inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;width:100%;padding:0 24px;box-sizing:border-box;}
-.site-footer__left{text-align:left;}
-.site-footer__center{flex:1;text-align:center;}
-.site-footer__center a{margin:0 12px;color:inherit;text-decoration:none;white-space:nowrap;}
-.site-footer__center a:hover,.site-footer__center a:focus{text-decoration:underline;}
-.site-footer__right{display:flex;gap:10px;align-items:center;}
-.site-footer__social-link{display:inline-block;width:28px;height:28px;}
-.site-footer__social-icon{width:100%;height:100%;object-fit:contain;display:block;}
-@media(max-width:600px){
-    .site-footer__inner{flex-direction:column;align-items:center;}
-    .site-footer__left,.site-footer__center,.site-footer__right{width:100%;text-align:center;margin-top:8px;}
-}
-.recipes{max-width:75vw;width:100%;margin:0 auto;padding:40px 20px 40px;margin-top:144px;}
-.recipes__controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.recipes__filter{padding:10px 18px;border-radius:20px;background:var(--dark);color:#fff;border:none;font-size:16px;cursor:pointer;}
-.recipes__button{display:inline-block;padding:10px 18px;border-radius:20px;background:var(--dark);color:#fff;border:none;cursor:pointer;font-size:16px;text-decoration:none;}
-.recipes__list{display:flex;flex-direction:column;gap:15px;}
-.recipes__card{display:flex;gap:25px;align-items:center;background:var(--card);border-radius:var(--radius);padding:var(--pad);border:2px solid var(--dark);width:100%;}
-.recipes__card-image{width:90px;height:90px;object-fit:cover;border-radius:10px;}
-.recipes__card-info{flex:1;}
-.recipes__card-title{font-size:18px;}
-.recipes__card-description{font-size:17px;color:#666;background-color:#a2a2a220;margin-top:10px;margin-right:0;border-radius:5px;padding:6px 8px;}
-.recipes__card-category{margin-top:4px;font-size:15px;}
-.recipes__card-actions{display:flex;gap:10px;align-self:center;}
-.recipes__card-button{display:inline-block;padding:10px 18px;border-radius:20px;background:var(--dark);color:#fff;border:none;cursor:pointer;text-decoration:none;font-size:16px;}
-.recipes__pagination{display:flex;justify-content:flex-end;gap:16px;margin-top:20px;margin-bottom:80px;}
-.recipes__page-link{background:none;border:none;color:var(--dark);font-size:16px;cursor:pointer;}
-.recipes__page-link:hover{color:var(--accent);}
-.recipes__page-link--active{color:var(--accent);font-weight:bold;}
+<style scoped>
+    .recipes{
+        max-width:75vw;
+        width:100%;
+        margin:0 auto;
+        padding:40px 20px 40px;
+        margin-top:20px;
+    }
+
+    .recipes__controls{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        margin-bottom:10px;
+    }
+
+    .recipes__filter{
+        padding:10px 18px;
+        border-radius:20px;
+        background:var(--dark);
+        color:#fff;
+        border:none;
+        font-size:16px;
+        cursor:pointer;
+        font-family: 'Itim', sans-serif;
+    }
+    
+    .recipes__button{
+        display:inline-block;
+        padding:10px 18px;
+        border-radius:20px;
+        background:var(--dark);
+        color:#fff;
+        border:none;
+        cursor:pointer;
+        font-size:16px;
+        text-decoration:none;
+        font-family: 'Itim', sans-serif;
+    }
+    
+    .recipes__list{
+        display:flex;
+        flex-direction:column;
+        gap:15px;
+    }
+    
+    .recipes__card{
+        display:flex;
+        gap:25px;
+        align-items:center;
+        background:var(--card);
+        border-radius:var(--radius);
+        padding:var(--pad);
+        border:2px solid var(--dark);
+        width:100%;
+    }
+
+    .recipes__card-image{
+        width:90px;
+        height:90px;
+        object-fit:cover;
+        border-radius:10px;
+    }
+
+    .recipes__card-info{
+        flex:1;
+    }
+
+    .recipes__card-title{
+        font-size:18px;
+    }
+
+    .recipes__card-description{
+        font-size:17px;
+        color:#666;
+        background-color:#a2a2a220;
+        margin-top:10px;
+        margin-right:0;
+        border-radius:5px;
+        padding:6px 8px;
+    }
+
+    .recipes__card-category{
+        margin-top:4px;
+        font-size:15px;
+    }
+
+    .recipes__card-actions{
+        display:flex;
+        gap:10px;
+        align-self:center;
+    }
+
+    .recipes__card-button{
+        display:inline-block;
+        padding:10px 18px;
+        border-radius:20px;
+        background:var(--dark);
+        color:#fff;
+        border:none;
+        cursor:pointer;
+        text-decoration:none;
+        font-size:16px;
+        font-family: 'Itim', sans-serif;
+    }
+
+    .recipes__pagination{
+        display:flex;
+        justify-content:flex-end;
+        gap:16px;
+        margin-top:20px;
+        margin-bottom:80px;
+    }
+
+    .recipes__page-link{
+        background:none;
+        border:none;
+        color:var(--dark);
+        font-size:16px;
+        cursor:pointer;
+        font-family: 'Itim', sans-serif;
+    }
+
+    .recipes__page-link:hover{
+        color:var(--accent);
+    }
+
+    .recipes__page-link--active{
+        color:var(--accent);
+        font-weight:bold;
+    }
 </style>
