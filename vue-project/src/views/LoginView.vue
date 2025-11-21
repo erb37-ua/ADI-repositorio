@@ -22,40 +22,79 @@
             <!-- Correo -->
             <div class="login-card__form-row login-card__form-row--icon">
                 <label for="correo" class="login-card__label">Correo electrónico</label>
-                <!-- Icono de correo (ya estaba correcto) -->
+                <!-- Icono de correo -->
                 <i class="login-card__icon fa-solid fa-envelope"></i>
-                <input id="correo" name="correo" class="login-card__input" placeholder="ejemplo@gmail.com" type="email" required v-model="correo" />
+                <input
+                    id="correo"
+                    name="correo"
+                    class="login-card__input"
+                    placeholder="ejemplo@gmail.com"
+                    type="email"
+                    required
+                    v-model="correo"
+                />
             </div>
 
             <!-- Contraseña -->
             <div class="login-card__form-row login-card__form-row--icon">
                 <label for="password" class="login-card__label">Contraseña</label>
-                <!-- Icono de contraseña (ya estaba correcto) -->
-                <i class="login-card__icon fa-solid fa-lock"></i>
-                <input id="password" name="password" class="login-card__input" placeholder="**********************" type="password" required v-model="password" />
+
+                <!-- Candado SVG igual que en registro -->
+                <svg
+                    class="login-card__icon login-card__icon--lock"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <rect
+                        x="5"
+                        y="10"
+                        width="14"
+                        height="10"
+                        rx="2"
+                        ry="2"
+                    />
+                    <path
+                        d="M9 10V7a3 3 0 0 1 6 0v3"
+                    />
+                    <circle cx="12" cy="15" r="1.3" />
+                </svg>
+
+                <input
+                    id="password"
+                    name="password"
+                    class="login-card__input"
+                    placeholder="**********************"
+                    type="password"
+                    required
+                    v-model="password"
+                />
             </div>
 
             <!-- Contraseña olvidada -->
-            <!-- CAMBIO 3 (BONUS): Añadida clase para ajustar espaciado -->
             <div class="login-card__form-row form-row--compact-link">
                 <a href="#" class="login-card__link login-card__link--forgot">¿Contraseña olvidada?</a>
             </div>
 
             <!-- Botón iniciar -->
             <div class="login-card__form-row">
-                <!-- CAMBIO 1: Eliminado el icono <i> de dentro del botón -->
-                <button type="submit" id="btnLogin" class="login-card__button">Iniciar sesión</button>
+                <button type="submit" id="btnLogin" class="login-card__button">
+                    Iniciar sesión
+                </button>
             </div>
 
             <!-- Enlace de Registro -->
-            <!-- CAMBIO 3 (BONUS): Añadida clase para ajustar espaciado -->
             <div class="login-card__form-row login-card__form-row--register form-row--compact-link">
-                 <RouterLink to="/register" class="login-card__link login-card__link--register">¿No tienes cuenta? Regístrate</RouterLink>
+                <RouterLink to="/register" class="login-card__link login-card__link--register">
+                ¿No tienes cuenta? Regístrate
+                </RouterLink>
             </div>
 
             <!-- Recuérdame -->
             <div class="login-card__form-row">
-                <label class="login-card__remember"><input type="checkbox" id="recordarme" v-model="remember" /> Recuérdame</label>
+                <label class="login-card__remember">
+                    <input type="checkbox" id="recordarme" v-model="remember" />
+                    Recuérdame
+                </label>
             </div>
 
             <!-- Separador -->
@@ -63,7 +102,9 @@
 
             <!-- Botón Google -->
             <div class="login-card__form-row">
-                <button type="button" class="login-card__button login-card__button--google"><i class="fa-brands fa-google"></i> Continúa con Google</button>
+                <button type="button" class="login-card__button login-card__button--google">
+                    <i class="fa-brands fa-google"></i> Continúa con Google
+                </button>
             </div>
             </form>
         </section>
@@ -96,16 +137,17 @@
         font-weight: bold;
     }
 
+    /* Más aire entre filas (antes 18px) */
     .login-card__form-row{
-        margin-bottom:18px;
+        margin-bottom:22px;
         position:relative;
         text-align:left;
     }
     
-    /* CAMBIO 3 (BONUS): Nueva clase para las filas de enlaces */
+    /* Filas de enlaces un poco compactas, pero menos agresivas */
     .form-row--compact-link {
-        margin-top: -10px;  /* Sube la fila entera */
-        margin-bottom: 10px; /* Reduce el espacio de abajo */
+        margin-top: -6px;     /* antes -10px */
+        margin-bottom: 12px;  /* antes 10px */
     }
 
     .login-card__form-row--register {
@@ -113,7 +155,7 @@
     }
 
     .login-card__form-row--icon .login-card__input{
-        padding-left:40px;
+        padding-left:46px; /* un poco más para el candado */
     }
 
     .login-card__label{
@@ -135,17 +177,26 @@
     .login-card__icon{
         position:absolute;
         left:12px;
-        top:70%;
+        top:72%;
         transform:translateY(-50%);
         color:#666;
+    }
+
+    /* Candado SVG: mismo estilo que en registro */
+    .login-card__icon--lock {
+        width: 22px;
+        height: 22px;
+        stroke: #666;
+        stroke-width: 1.6;
+        fill: transparent;
+        margin-right: 0;
+        pointer-events: none;
     }
 
     .login-card__link{
         font-size:14px;
         text-decoration:underline;
         display:inline-block;
-        /* CAMBIO 3 (BONUS): Quitado el margin-top negativo de aquí */
-        /* margin-top: -30px; */
         font-weight:bold;
     }
 
@@ -159,7 +210,7 @@
 
     .login-card__button{
         display:block;
-        margin:0 auto;
+        margin:16px auto 0;   /* margen superior extra para separar del input */
         padding:12px 52px;
         border-radius:12px;
         background:var(--dark);
@@ -191,10 +242,11 @@
         align-items:center;
         text-align:center;
         color:#666;
-        margin:20px 0;
+        margin:24px 0;   /* un poco más de aire que antes (20px) */
     }
 
-    .login-card__separator::before,.login-card__separator::after{
+    .login-card__separator::before,
+    .login-card__separator::after{
         content:"";
         flex:1;
         border-bottom:1px solid #ccc;
@@ -208,3 +260,4 @@
         margin-left:.75em;
     }
 </style>
+
