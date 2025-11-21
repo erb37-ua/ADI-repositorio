@@ -1,68 +1,46 @@
 <script setup>
-    import { ref, computed } from 'vue'
+    import { ref, computed, onMounted } from 'vue'
     import { RouterLink, useRouter } from 'vue-router'
+    import { listarRecetas, eliminarReceta } from '@/services/recetasService.js'
 
     const router = useRouter()
 
-    // Datos simulados
-    const recipes = ref([
-        {
-            id: 1,
-            title: 'Tostadas francesas con miel',
-            description: 'Pan empapado en huevo, dorado a la plancha y servido con miel y fruta fresca.',
-            category: 'Desayuno',
-            image: '/receta1.jpg',
-            showDetails: false
-        },
-        {
-            id: 2,
-            title: 'Ensalada de quinoa y aguacate',
-            description: 'Quinoa, verduras frescas y aguacate con aliño de limón y aceite de oliva.',
-            category: 'Comida',
-            image: '/receta2.jpg',
-            showDetails: false
-        },
-        {
-            id: 3,
-            title: 'Crema de calabaza asada',
-            description: 'Calabaza asada, cebolla y zanahoria trituradas con caldo suave y un toque de nata.',
-            category: 'Cena',
-            image: '/receta3.jpg',
-            showDetails: false
-        },
-        {
-            id: 4,
-            title: 'Brownie de chocolate',
-            description: 'Bizcocho denso de chocolate con nueces, perfecto para los amantes del dulce.',
-            category: 'Dulce',
-            image: '/receta4.jpg',
-            showDetails: false
-        },
-        {
-            id: 5,
-            title: 'Empanadillas de atún al horno',
-            description: 'Masa crujiente rellena de atún, tomate y huevo duro, horneada hasta dorar.',
-            category: 'Salado',
-            image: '/receta5.jpg',
-            showDetails: false
-        },
-        {
-            id: 6,
-            title: 'Yogur con granola y fruta',
-            description: 'Vaso de yogur natural con granola casera y frutas de temporada.',
-            category: 'Desayuno',
-            image: '/receta6.jpg',
-            showDetails: false
-        }
-    ])
+    const recipes = ref([])
+    const loading = ref(true)
 
     const filterCategory = ref('')
     const currentPage = ref(1)
     const pageSize = 4
 
+    // --- CARGAR DATOS ---
+    const loadRecipes = async () => {
+        loading.value = true
+        try {
+            const data = await listarRecetas()
+            
+            recipes.value = data.map(r => ({
+                id: r.id,
+                title: r.titulo,
+                description: r.descripcion,
+                category: r.categoria || [], 
+                image: r.imagenUrl
+            }))
+        } catch (error) {
+            console.error("Error cargando recetas:", error)
+            alert("Hubo un error al cargar las recetas.")
+        } finally {
+            loading.value = false
+        }
+    }
+
+    onMounted(() => {
+        loadRecipes()
+    })
+
+    // --- COMPUTED ---
     const filteredRecipes = computed(() =>
         filterCategory.value
-            ? recipes.value.filter(r => r.category === filterCategory.value)
+            ? recipes.value.filter(r => r.category.includes(filterCategory.value))
             : recipes.value
     )
 
@@ -75,6 +53,7 @@
         return filteredRecipes.value.slice(start, start + pageSize)
     })
 
+    // --- FUNCIONES ---
     const changeFilter = (event) => {
         filterCategory.value = event.target.value
         currentPage.value = 1
@@ -85,19 +64,21 @@
         currentPage.value = page
     }
 
-    const handleDelete = (id) => {
-        recipes.value = recipes.value.filter(r => r.id !== id)
-        if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
+    const handleDelete = async (id) => {
+        if (!confirm("¿Estás seguro de que quieres eliminar esta receta?")) return
+
+        try {
+            await eliminarReceta(id)
+            recipes.value = recipes.value.filter(r => r.id !== id)
+            if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
+        } catch (error) {
+            console.error("Error eliminando:", error)
+            alert("No se pudo eliminar la receta.")
+        }
     }
 
     const handleEdit = (id) => {
-        // En el futuro podrías pasar el id por query/params
-        console.log('Editar receta con id:', id)
-        router.push('/create-edit')
-    }
-
-    const toggleDetails = (recipe) => {
-        recipe.showDetails = !recipe.showDetails
+        router.push(`/create-edit/${id}`) 
     }
 </script>
 
@@ -105,46 +86,50 @@
     <div class="recipes">
         <div class="recipes__controls">
             <select class="recipes__filter" :value="filterCategory" @change="changeFilter">
-            <option value="">Todo</option>
-            <option value="Desayuno">Desayuno</option>
-            <option value="Comida">Comida</option>
-            <option value="Cena">Cena</option>
-            <option value="Salado">Salado</option>
-            <option value="Dulce">Dulce</option>
+                <option value="">Todo</option>
+                <option value="Desayuno">Desayuno</option>
+                <option value="Comida">Comida</option>
+                <option value="Cena">Cena</option>
+                <option value="Salado">Salado</option>
+                <option value="Dulce">Dulce</option>
             </select>
 
             <RouterLink to="/create-edit" class="recipes__button">Añadir receta</RouterLink>
         </div>
 
-        <div class="recipes__list">
+        <div v-if="loading" style="text-align:center; padding: 20px;">Cargando recetas...</div>
+        <div v-else-if="recipes.length === 0" style="text-align:center; padding: 20px;">No hay recetas disponibles.</div>
+
+        <div v-else class="recipes__list">
             <article v-for="recipe in paginatedRecipes" :key="recipe.id" class="recipes__card">
-            <img :src="recipe.image" :alt="recipe.title" class="recipes__card-image" />
-            <div class="recipes__card-info">
-                <h3 class="recipes__card-title">{{ recipe.title }}</h3>
-                <p class="recipes__card-category"><strong>Categoría:</strong> {{ recipe.category }}</p>
-                <p v-if="recipe.showDetails" class="recipes__card-description">{{ recipe.description }}</p>
-            </div>
-            <div class="recipes__card-actions">
-                <button type="button" class="recipes__card-button" @click="toggleDetails(recipe)">
-                {{ recipe.showDetails ? 'Ocultar detalles' : 'Ver detalles' }}
-                </button>
-                <button type="button" class="recipes__card-button" @click="handleEdit(recipe.id)">Editar</button>
-                <button type="button" class="recipes__card-button" @click="handleDelete(recipe.id)">Eliminar</button>
-            </div>
+                <img 
+                    :src="recipe.image || '/placeholder.jpg'" 
+                    :alt="recipe.title" 
+                    class="recipes__card-image" 
+                    @error="$event.target.src = '/placeholder.jpg'"
+                />
+                <div class="recipes__card-info">
+                    <h3 class="recipes__card-title">{{ recipe.title }}</h3>
+                    <p class="recipes__card-description">{{ recipe.description }}</p>
+                </div>
+                <div class="recipes__card-actions">
+                    <button type="button" class="recipes__card-button" @click="handleEdit(recipe.id)">Editar</button>
+                    <button type="button" class="recipes__card-button" @click="handleDelete(recipe.id)">Eliminar</button>
+                </div>
             </article>
         </div>
 
-        <nav class="recipes__pagination" aria-label="Paginación">
+        <nav v-if="recipes.length > 0" class="recipes__pagination" aria-label="Paginación">
             <button type="button" class="recipes__page-link" @click="setPage(currentPage - 1)">«</button>
             <button
-            v-for="page in totalPages"
-            :key="page"
-            type="button"
-            class="recipes__page-link"
-            :class="{ 'recipes__page-link--active': page === currentPage }"
-            @click="setPage(page)"
+                v-for="page in totalPages"
+                :key="page"
+                type="button"
+                class="recipes__page-link"
+                :class="{ 'recipes__page-link--active': page === currentPage }"
+                @click="setPage(page)"
             >
-            {{ page }}
+                {{ page }}
             </button>
             <button type="button" class="recipes__page-link" @click="setPage(currentPage + 1)">»</button>
         </nav>
@@ -213,35 +198,44 @@
         height:90px;
         object-fit:cover;
         border-radius:10px;
+        /* Evita que la imagen se aplaste si el contenido crece */
+        flex-shrink: 0; 
     }
 
     .recipes__card-info{
         flex:1;
+        /* IMPORTANTE: Permite que el texto se corte correctamente dentro de flexbox */
+        min-width: 0; 
     }
 
     .recipes__card-title{
         font-size:18px;
+        font-weight: bold; /* Título en negrita */
+        margin-bottom: 4px; 
+        
+        /* Opcional: si quieres que el título también se corte en 1 línea */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .recipes__card-description{
         font-size:17px;
         color:#666;
-        background-color:#a2a2a220;
-        margin-top:10px;
-        margin-right:0;
-        border-radius:5px;
-        padding:6px 8px;
-    }
-
-    .recipes__card-category{
-        margin-top:4px;
-        font-size:15px;
+        margin-top:0;
+        
+        /* Lógica para mostrar solo 1 línea con puntos suspensivos (...) */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .recipes__card-actions{
         display:flex;
         gap:10px;
         align-self:center;
+        /* Evita que los botones se aplasten */
+        flex-shrink: 0;
     }
 
     .recipes__card-button{
