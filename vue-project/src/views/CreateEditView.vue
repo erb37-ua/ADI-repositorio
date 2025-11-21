@@ -1,28 +1,97 @@
 <script setup>
-import { ref } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
+import { ref, onMounted, computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { createReceta, obtenerReceta, actualizarReceta } from '@/services/recetasService.js'
 
 const router = useRouter()
+const route = useRoute()
 
-// Datos simulados de receta
-const titulo = ref('Tarta de chocolate clásica')
-const descripcion = ref('Bizcocho esponjoso de chocolate con cobertura suave y cobertura de cacao.')
-const ingredientes = ref('Harina\nHuevos\nLeche\nChocolate en polvo\nAzúcar\nMantequilla')
-const pasos = ref('Precalienta el horno a 180ºC.\nMezcla los ingredientes secos.\nAñade los ingredientes líquidos y bate.\nVierte en un molde engrasado.\nHornea durante 30-35 minutos.')
-const categoriaSelect = ref('Dulce')
-const categoriasSeleccionadas = ref(['Dulce'])
-const imagenPreview = ref('/subir.png') // placeholder
+// Variables principales
+const titulo = ref('')
+const descripcion = ref('')
+const categoriaSelect = ref('')
+const categoriasSeleccionadas = ref([])
+const imagenPreview = ref('/subir.png')
+const imagenFile = ref(null)
 
+// Estructuras de datos para el JSON
+// Inicializamos ingredientes con una sección por defecto si está vacío
+const ingredientes = ref([
+    { section: 'Ingredientes Principales', items: [{ amount: '', name: '' }] }
+])
+const pasos = ref([{ number: 1, instruction: '' }])
+
+const isEditMode = computed(() => !!route.params.id)
+const recipeId = route.params.id
+
+// --- AL MONTAR LA PÁGINA ---
+onMounted(async () => {
+    if (isEditMode.value) {
+        try {
+            const receta = await obtenerReceta(recipeId)
+            
+            titulo.value = receta.titulo
+            descripcion.value = receta.descripcion
+            
+            // Cargar Categorías
+            categoriasSeleccionadas.value = Array.isArray(receta.categoria) ? receta.categoria : []
+            
+            // Cargar Ingredientes (JSON Estructurado)
+            if (receta.ingredientes && Array.isArray(receta.ingredientes) && receta.ingredientes.length > 0) {
+                ingredientes.value = receta.ingredientes
+            }
+
+            // Cargar Pasos (JSON Estructurado)
+            if (receta.pasos && Array.isArray(receta.pasos) && receta.pasos.length > 0) {
+                pasos.value = receta.pasos
+            }
+            
+            if (receta.imagenUrl) {
+                imagenPreview.value = receta.imagenUrl
+            }
+        } catch (error) {
+            console.error("Error cargando receta:", error)
+            alert("Error al cargar la receta.")
+            router.push('/list')
+        }
+    }
+})
+
+// --- LÓGICA DE INGREDIENTES ---
+const addIngredientSection = () => {
+    ingredientes.value.push({ section: 'Nueva Sección', items: [{ amount: '', name: '' }] })
+}
+const removeIngredientSection = (index) => {
+    ingredientes.value.splice(index, 1)
+}
+const addIngredientItem = (sectionIndex) => {
+    ingredientes.value[sectionIndex].items.push({ amount: '', name: '' })
+}
+const removeIngredientItem = (sectionIndex, itemIndex) => {
+    ingredientes.value[sectionIndex].items.splice(itemIndex, 1)
+}
+
+// --- LÓGICA DE PASOS ---
+const addStep = () => {
+    pasos.value.push({ number: pasos.value.length + 1, instruction: '' })
+}
+const removeStep = (index) => {
+    pasos.value.splice(index, 1)
+    // Recalcular números de paso
+    pasos.value.forEach((step, i) => step.number = i + 1)
+}
+
+// --- MANEJO DE IMAGEN ---
 const handleImagenChange = (event) => {
     const file = event.target.files?.[0]
     if (!file) return
+    imagenFile.value = file
     const reader = new FileReader()
-    reader.onload = (e) => {
-        imagenPreview.value = e.target?.result || '/subir.png'
-    }
+    reader.onload = (e) => imagenPreview.value = e.target?.result || '/subir.png'
     reader.readAsDataURL(file)
 }
 
+// --- CATEGORÍAS ---
 const handleCategoriaAdd = () => {
     const value = categoriaSelect.value
     if (!value) return
@@ -31,114 +100,155 @@ const handleCategoriaAdd = () => {
     }
     categoriaSelect.value = ''
 }
-
 const removeCategoria = (cat) => {
     categoriasSeleccionadas.value = categoriasSeleccionadas.value.filter(c => c !== cat)
 }
 
-const handleCancelar = () => {
-    // Simula volver al listado de recetas
-    router.push('/list')
+// --- GUARDAR / CREAR ---
+const handleSubmit = async () => {
+    if (!titulo.value || categoriasSeleccionadas.value.length === 0) {
+        alert("Debes añadir al menos el título y una categoría.")
+        return
+    }
+
+    const formData = new FormData()
+    formData.append("titulo", titulo.value)
+    formData.append("descripcion", descripcion.value)
+    
+    // Enviamos los objetos JSON tal cual
+    formData.append("ingredientes", JSON.stringify(ingredientes.value))
+    formData.append("pasos", JSON.stringify(pasos.value))
+    formData.append("categoria", JSON.stringify(categoriasSeleccionadas.value))
+    
+    if (imagenFile.value) {
+        formData.append("imagen", imagenFile.value)
+    }
+
+    try {
+        if (isEditMode.value) {
+            await actualizarReceta(recipeId, formData)
+            alert("¡Receta actualizada correctamente!")
+        } else {
+            await createReceta(formData)
+            alert("¡Receta creada correctamente!")
+        }
+        router.push('/list')
+    } catch (error) {
+        console.error("Error guardando:", error)
+        alert("Hubo un error: " + error.message)
+    }
 }
 
-const handleCrear = () => {
-    const recetaSimulada = {
-        titulo: titulo.value,
-        descripcion: descripcion.value,
-        ingredientes: ingredientes.value.split('\n').filter(l => l.trim() !== ''),
-        pasos: pasos.value.split('\n').filter(l => l.trim() !== ''),
-        categorias: categoriasSeleccionadas.value,
-        imagen: imagenPreview.value
-    }
-    console.log('Receta simulada creada:', recetaSimulada)
-    alert('Receta creada (simulación). Mira la consola para ver los datos.')
-}
+const handleCancelar = () => router.push('/list')
 </script>
 
 <template>
     <div class="container">
         <section class="form-card">
-            <h2 class="form-card__title">Añadir receta</h2>
+            <h2 class="form-card__title">
+                {{ isEditMode ? 'Editar Receta' : 'Añadir receta' }}
+            </h2>
+            
             <div class="form-card__body">
-            <div class="form-card__image">
-                <img :src="imagenPreview" alt="Imagen receta" />
-                <input type="file" id="imagenInput" accept="image/*" @change="handleImagenChange" />
-            </div>
-
-            <div class="form-card__content">
-                <label class="form-card__label" for="tituloInput">Título:</label>
-                <input id="tituloInput" class="form-card__input" placeholder="Escribe aqui.." v-model="titulo" />
-
-                <label class="form-card__label" for="descripcionInput">Descripción:</label>
-                <textarea id="descripcionInput" class="form-card__input form-card__input--autosize" placeholder="Escribe aqui..." v-model="descripcion"></textarea>
-
-                <label class="form-card__label" for="ingredientesInput">Ingredientes (uno por línea):</label>
-                <textarea id="ingredientesInput" class="form-card__input form-card__input--autosize" placeholder="Ej: Harina&#10;Huevos&#10;Leche" v-model="ingredientes"></textarea>
-
-                <label class="form-card__label" for="pasosInput">Pasos (uno por línea):</label>
-                <textarea id="pasosInput" class="form-card__input form-card__input--autosize" placeholder="Paso 1...&#10;Paso 2..." v-model="pasos"></textarea>
-
-                <label class="form-card__label" for="categoriaSelect">Categoría:</label>
-                <div class="form-card__categoria">
-                <select id="categoriaSelect" class="form-card__input" v-model="categoriaSelect" @change="handleCategoriaAdd">
-                    <option value="">-- Selecciona una categoría --</option>
-                    <option value="Desayuno">Desayuno</option>
-                    <option value="Comida">Comida</option>
-                    <option value="Cena">Cena</option>
-                    <option value="Salado">Salado</option>
-                    <option value="Dulce">Dulce</option>
-                </select>
-
-                <div id="categoriaSeleccionadas" class="categoria-seleccionadas">
-                    <span v-for="cat in categoriasSeleccionadas" :key="cat" class="categoria-tag" @click="removeCategoria(cat)">{{ cat }} ✕</span>
+                <div class="form-card__image">
+                    <img :src="imagenPreview" alt="Imagen receta" @error="imagenPreview = '/subir.png'" />
+                    <label class="custom-file-upload">
+                        <input type="file" id="imagenInput" accept="image/*" @change="handleImagenChange" />
+                        Cambiar imagen
+                    </label>
                 </div>
+
+                <div class="form-card__content">
+                    <label class="form-card__label">Título:</label>
+                    <input class="form-card__input" placeholder="Ej. Espaguetis a la Carbonara" v-model="titulo" />
+
+                    <label class="form-card__label">Descripción:</label>
+                    <textarea class="form-card__input" placeholder="Breve descripción..." v-model="descripcion"></textarea>
+
+                    <label class="form-card__label">Ingredientes:</label>
+                    <div class="dynamic-list">
+                        <div v-for="(section, sIndex) in ingredientes" :key="sIndex" class="ingredient-section">
+                            <div class="section-header">
+                                <input v-model="section.section" placeholder="Nombre de sección (ej. Para la salsa)" class="input-subtle">
+                                <button type="button" class="btn-icon-delete" @click="removeIngredientSection(sIndex)" v-if="ingredientes.length > 1">✕</button>
+                            </div>
+                            
+                            <div v-for="(item, iIndex) in section.items" :key="iIndex" class="ingredient-row">
+                                <input v-model="item.amount" placeholder="Cant. (320g)" class="input-small">
+                                <input v-model="item.name" placeholder="Ingrediente" class="input-flex">
+                                <button type="button" class="btn-icon-delete" @click="removeIngredientItem(sIndex, iIndex)">-</button>
+                            </div>
+                            <button type="button" class="btn-text-add" @click="addIngredientItem(sIndex)">+ Añadir ingrediente</button>
+                        </div>
+                        <button type="button" class="btn-secondary-small" @click="addIngredientSection">Añadir nueva sección</button>
+                    </div>
+
+                    <label class="form-card__label mt-4">Pasos de preparación:</label>
+                    <div class="dynamic-list">
+                        <div v-for="(step, index) in pasos" :key="index" class="step-row">
+                            <span class="step-number">{{ step.number }}</span>
+                            <textarea v-model="step.instruction" placeholder="Describe el paso..." class="input-flex step-input"></textarea>
+                            <button type="button" class="btn-icon-delete" @click="removeStep(index)">✕</button>
+                        </div>
+                        <button type="button" class="btn-secondary-small" @click="addStep">+ Añadir paso</button>
+                    </div>
+
+                    <label class="form-card__label mt-4">Categoría:</label>
+                    <div class="form-card__categoria">
+                        <select id="categoriaSelect" class="form-card__input" v-model="categoriaSelect" @change="handleCategoriaAdd">
+                            <option value="">-- Selecciona --</option>
+                            <option value="Desayuno">Desayuno</option>
+                            <option value="Comida">Comida</option>
+                            <option value="Cena">Cena</option>
+                            <option value="Salado">Salado</option>
+                            <option value="Dulce">Dulce</option>
+                        </select>
+                        <div class="categoria-seleccionadas">
+                            <span v-for="cat in categoriasSeleccionadas" :key="cat" class="categoria-tag" @click="removeCategoria(cat)">
+                                {{ cat }} ✕
+                            </span>
+                        </div>
+                    </div>
                 </div>
-            </div>
             </div>
 
             <div class="form-card__actions">
-            <button class="form-card__button form-card__button--primary" type="button" @click="handleCancelar">Cancelar</button>
-            <button class="form-card__button form-card__button--primary" type="button" @click="handleCrear">Crear</button>
+                <button class="form-card__button form-card__button--secondary" type="button" @click="handleCancelar">Cancelar</button>
+                <button class="form-card__button form-card__button--primary" type="button" @click="handleSubmit">
+                    {{ isEditMode ? 'Guardar' : 'Crear' }}
+                </button>
             </div>
         </section>
     </div>
 </template>
 
 <style scoped>
-    /* Contenedor */
     .container { 
-        max-width: 1000px; 
-        margin: 0 auto; 
-        padding: 40px 20px 120px; 
-        display: flex; 
-        justify-content: 
-        center; align-items: center; 
+        max-width: 1000px; margin: 0 auto; padding: 40px 20px 120px; 
+        display: flex; justify-content: center; 
     }
-
-    /* Form card */
     .form-card { 
-        background: var(--card); 
-        border-radius: var(--radius); 
-        padding: var(--pad); 
-        border: 2px solid var(--blue); 
-        max-width: 1000px; 
-        width: 100%; 
-        text-align: center; 
+        background: var(--card); border-radius: var(--radius); padding: var(--pad); 
+        border: 2px solid var(--blue, #007bff); /* Fallback por si no existe var */
+        width: 100%; text-align: center; 
     }
-
     .form-card__title { 
         margin-bottom: 28px; 
     }
-
     .form-card__body { 
-        display: flex; 
-        gap: 40px; 
-        align-items: flex-start; 
-        justify-content: center; 
+        display: flex; gap: 40px; align-items: flex-start; 
+    }
+    
+    @media (max-width: 768px) {
+        .form-card__body { 
+            flex-direction: column; 
+            align-items: center; 
+        }
     }
 
     .form-card__image { 
-        text-align: center; 
+        width: 280px; 
+        flex-shrink: 0; 
         display: flex; 
         flex-direction: column; 
         align-items: center; 
@@ -149,14 +259,14 @@ const handleCrear = () => {
         height: 280px; 
         object-fit: cover; 
         border-radius: 20px; 
-        margin-top: 0; 
-        margin-bottom: 10px; 
+        margin-bottom: 15px; 
         border: 1px solid #ccc; 
+        background: #f0f0f0; 
     }
-
+    
     .form-card__content { 
-        flex: 1; 
-        text-align: left; 
+        flex: 1; text-align: left; 
+        width: 100%; 
     }
 
     .form-card__label { 
@@ -165,58 +275,172 @@ const handleCrear = () => {
         font-weight: bold; 
     }
 
-    .form-card__input { 
-        width: 100%; 
-        padding: 10px 18px; 
-        border-radius: 10px; 
-        border: 2px solid var(--blue); 
-        margin-bottom: 20px; 
-        font-family: "Itim"; 
-        font-size: 1.1rem; 
-    }
-
-    .form-card__actions { 
-        display: flex; 
-        gap: 60px; 
+    .mt-4 { 
         margin-top: 20px; 
-        justify-content: center; 
     }
 
-    .form-card__button { 
-        padding: 10px 18px; 
-        border-radius: 20px; 
-        cursor: pointer; 
+    /* Estilos de Inputs Generales */
+    .form-card__input { 
+        width: 100%; padding: 10px; border-radius: 10px; 
+        border: 2px solid var(--blue, #007bff); margin-bottom: 15px; 
+        font-family: "Itim"; font-size: 1rem; box-sizing: border-box;
+    }
+
+    /* Estilos Listas Dinámicas (Ingredientes/Pasos) */
+    .dynamic-list { 
+        background: #f9f9f9; 
+        padding: 15px; border-radius: 10px; 
+        border: 1px solid #eee; 
+    }
+
+    .ingredient-section { 
+        margin-bottom: 15px; 
+        border-bottom: 1px dashed #ccc; 
+        padding-bottom: 10px; 
+    }
+
+    .section-header { 
+        display: flex; 
+        justify-content: space-between; 
+        margin-bottom: 8px; 
+    }
+
+    .input-subtle { 
         border: none; 
-        font-size: 19px; 
+        background: transparent; 
+        font-weight: bold; 
+        color: #555; 
+        width: 100%; 
+        font-style: italic; 
+    }
+    
+    .ingredient-row, .step-row { 
+        display: flex; 
+        gap: 10px; 
+        margin-bottom: 8px; 
+        align-items: center; 
     }
 
-    .form-card__button--primary { 
-        background: var(--blue); 
-        color: #fff; 
+    .input-small { 
+        width: 80px; 
+        padding: 8px; 
+        border: 1px solid #ccc; 
+        border-radius: 5px; 
     }
 
-    .form-card__input--autosize { 
-        min-height: 120px; 
+    .input-flex { 
+        flex: 1; 
+        padding: 8px; 
+        border: 1px solid #ccc; 
+        border-radius: 5px; 
+        font-family: inherit; 
+    }
+
+    .step-input { 
+        min-height: 60px; 
         resize: vertical; 
     }
 
+    .step-number { 
+        font-weight: bold; 
+        background: #ddd; 
+        width: 25px; 
+        height: 25px; 
+        border-radius: 50%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 0.9rem; 
+    }
+
+    /* Botones pequeños dentro del formulario */
+    .btn-icon-delete { 
+        background: #ff4d4d; 
+        color: white; 
+        border: none; 
+        width: 24px; 
+        height: 24px; 
+        border-radius: 50%; 
+        cursor: pointer; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 12px; 
+    }
+
+    .btn-text-add { 
+        background: none; 
+        border: none; 
+        color: #007bff; 
+        cursor: pointer; 
+        font-size: 0.9rem; 
+        margin-top: 5px; 
+    }
+
+    .btn-secondary-small { 
+        background: #e2e6ea; 
+        border: none; 
+        padding: 8px 15px; 
+        border-radius: 15px; 
+        cursor: pointer; 
+        font-size: 0.9rem; 
+        margin-top: 10px; 
+    }
+
+    .btn-secondary-small:hover { 
+        background: #dbe0e5; 
+    }
+
+    /* Categorías */
     .categoria-seleccionadas { 
         display: flex; 
         flex-wrap: wrap; 
-        gap: 8px; 
-        margin-top: 8px; 
+        gap: 8px;
+        margin-top: -5px; 
+        margin-bottom: 20px; 
     }
-
     .categoria-tag { 
         background-color: #ffd966; 
         color: #333; 
-        padding: 5px 10px; 
+        padding: 5px 12px; 
         border-radius: 15px; 
         font-size: 0.9rem; 
         cursor: pointer; 
     }
 
-    .categoria-tag:hover { 
-        background-color: #f1c232; 
+    /* Botones Principales (Fix Transparencia) */
+    .form-card__actions { 
+        display: flex; 
+        gap: 40px; 
+        margin-top: 30px; 
+        justify-content: center; 
+    }
+
+    .form-card__button { 
+        padding: 12px 35px; 
+        border-radius: 25px; 
+        cursor: pointer; 
+        border: none; 
+        font-size: 18px; 
+        font-weight: bold; 
+        font-family: 'Itim'; 
+    }
+    
+    .form-card__button--primary { 
+        background-color: #007bff; /* Color fijo azul */
+        color: #fff; 
+    }
+
+    .form-card__button--primary:hover { 
+        background-color: #0056b3; 
+    }
+
+    .form-card__button--secondary { 
+        background: #ccc; 
+        color: #333; 
+    }
+
+    .form-card__button--secondary:hover { 
+        background: #bbb; 
     }
 </style>

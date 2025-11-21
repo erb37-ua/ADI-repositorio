@@ -11,7 +11,7 @@
       <nav class="site-footer__center" aria-label="Enlaces legales">
         <!-- Usamos router-link para la navegación interna de Vue -->
         <router-link to="/legal">Aviso Legal</router-link>
-        <router-link to="/privacy">Política de Privacidad</router-link>
+        <router-link to="/privacidad">Política de Privacidad</router-link>
         <router-link to="/cookies">Política de Cookies</router-link>
       </nav>
 

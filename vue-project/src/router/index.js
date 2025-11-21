@@ -39,8 +39,9 @@ const router = createRouter({
       name: 'register',
       component: () => import('../views/RegisterView.vue'),
     },
+    // 👇 AQUÍ ESTÁ EL CAMBIO: Añadimos /:id?
     {
-      path: '/create-edit',
+      path: '/create-edit/:id?', 
       name: 'create-edit',
       component: () => import('../views/CreateEditView.vue'),
     },
