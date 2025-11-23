@@ -196,7 +196,7 @@ const handleCancelar = () => router.push('/list')
                     <label class="form-card__label mt-4">Categoría:</label>
                     <div class="form-card__categoria">
                         <select id="categoriaSelect" class="form-card__input" v-model="categoriaSelect" @change="handleCategoriaAdd">
-                            <option value="">-- Selecciona --</option>
+                            <option value=""> Selecciona </option>
                             <option value="Desayuno">Desayuno</option>
                             <option value="Comida">Comida</option>
                             <option value="Cena">Cena</option>
@@ -229,11 +229,12 @@ const handleCancelar = () => router.push('/list')
     }
     .form-card { 
         background: var(--card); border-radius: var(--radius); padding: var(--pad); 
-        border: 2px solid var(--blue, #007bff); /* Fallback por si no existe var */
+        border: 2px solid var(--dark); /* Fallback por si no existe var */
         width: 100%; text-align: center; 
     }
     .form-card__title { 
-        margin-bottom: 28px; 
+        margin-bottom: 28px;
+        font-weight: bold; 
     }
     .form-card__body { 
         display: flex; gap: 40px; align-items: flex-start; 
@@ -282,7 +283,7 @@ const handleCancelar = () => router.push('/list')
     /* Estilos de Inputs Generales */
     .form-card__input { 
         width: 100%; padding: 10px; border-radius: 10px; 
-        border: 2px solid var(--blue, #007bff); margin-bottom: 15px; 
+        border: 2px solid var(--dark); margin-bottom: 15px; 
         font-family: "Itim"; font-size: 1rem; box-sizing: border-box;
     }
 
@@ -310,8 +311,7 @@ const handleCancelar = () => router.push('/list')
         background: transparent; 
         font-weight: bold; 
         color: #555; 
-        width: 100%; 
-        font-style: italic; 
+        width: 100%;
     }
     
     .ingredient-row, .step-row { 
@@ -322,7 +322,7 @@ const handleCancelar = () => router.push('/list')
     }
 
     .input-small { 
-        width: 80px; 
+        width: 120px; 
         padding: 8px; 
         border: 1px solid #ccc; 
         border-radius: 5px; 
@@ -333,7 +333,6 @@ const handleCancelar = () => router.push('/list')
         padding: 8px; 
         border: 1px solid #ccc; 
         border-radius: 5px; 
-        font-family: inherit; 
     }
 
     .step-input { 
@@ -371,7 +370,7 @@ const handleCancelar = () => router.push('/list')
     .btn-text-add { 
         background: none; 
         border: none; 
-        color: #007bff; 
+        color: var(--dark); 
         cursor: pointer; 
         font-size: 0.9rem; 
         margin-top: 5px; 
@@ -422,17 +421,16 @@ const handleCancelar = () => router.push('/list')
         cursor: pointer; 
         border: none; 
         font-size: 18px; 
-        font-weight: bold; 
         font-family: 'Itim'; 
     }
     
     .form-card__button--primary { 
-        background-color: #007bff; /* Color fijo azul */
+        background-color: var(--dark);
         color: #fff; 
     }
 
     .form-card__button--primary:hover { 
-        background-color: #0056b3; 
+        background-color: var(--dark-hover); 
     }
 
     .form-card__button--secondary { 

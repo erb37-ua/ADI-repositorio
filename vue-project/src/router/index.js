@@ -39,7 +39,6 @@ const router = createRouter({
       name: 'register',
       component: () => import('../views/RegisterView.vue'),
     },
-    // 👇 AQUÍ ESTÁ EL CAMBIO: Añadimos /:id?
     {
       path: '/create-edit/:id?', 
       name: 'create-edit',
@@ -61,7 +60,7 @@ const router = createRouter({
       component: () => import('../views/ProfileView.vue'),
     },
     {
-      path: '/recipe-detail',
+      path: '/recipe-detail/:id',
       name: 'recipe-detail',
       component: () => import('../views/RecipeDetailView.vue'),
     },
