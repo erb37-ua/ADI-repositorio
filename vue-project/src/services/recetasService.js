@@ -20,7 +20,6 @@ export async function listarRecetas(filtroCategoria = "") {
             id: r.id,
             titulo: r.titulo,
             descripcion: r.descripcion,
-            // Genera la URL absoluta de la imagen
             imagenUrl: r.imagen ? pb.files.getURL(r, r.imagen) : null,
             ingredientes: parseJSONField(r.ingredientes),
             pasos: parseJSONField(r.pasos),
@@ -83,6 +82,73 @@ export async function eliminarReceta(id) {
         await pb.collection("recetas").delete(id);
     } catch (err) {
         console.error(`Error borrando receta ${id}:`, err);
+        throw err;
+    }
+}
+
+// --- HOME & SOCIAL ---
+
+export async function obtenerRecetasInicio() {
+    try {
+        // 1. Obtener recetas
+        const records = await pb.collection("recetas").getFullList({
+            sort: "-created",
+        });
+
+        // 2. Obtener likes del usuario actual (si está logueado)
+        let misLikes = [];
+        if (pb.authStore.isValid) {
+            try {
+                misLikes = await pb.collection("likes").getFullList({
+                    filter: `usuario = "${pb.authStore.model.id}"`,
+                });
+            } catch (e) { /* Ignorar error si no hay likes */ }
+        }
+
+        // 3. Mapear datos para el Home
+        return records.map(r => {
+            const likeRecord = misLikes.find(l => l.receta === r.id);
+            
+            return {
+                id: r.id,
+                titulo: r.titulo,
+                imagen: r.imagen ? pb.files.getURL(r, r.imagen) : '/receta-ramen.jpg',
+                categoria: parseJSONField(r.categoria),
+                comentarios: 0, 
+                liked: !!likeRecord,
+                likeId: likeRecord ? likeRecord.id : null
+            };
+        });
+
+    } catch (err) {
+        console.error("Error cargando inicio:", err);
+        return [];
+    }
+}
+
+export async function toggleLike(receta) {
+    if (!pb.authStore.isValid) {
+        alert("Debes iniciar sesión para dar like.");
+        return null; 
+    }
+
+    try {
+        // Si ya tiene like, lo borramos
+        if (receta.liked && receta.likeId) {
+            await pb.collection("likes").delete(receta.likeId);
+            return { liked: false, likeId: null };
+        } 
+        // Si no tiene like, lo creamos
+        else {
+            const data = {
+                usuario: pb.authStore.model.id,
+                receta: receta.id
+            };
+            const record = await pb.collection("likes").create(data);
+            return { liked: true, likeId: record.id };
+        }
+    } catch (err) {
+        console.error("Error en toggleLike:", err);
         throw err;
     }
 }
