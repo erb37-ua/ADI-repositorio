@@ -1,123 +1,264 @@
+<script setup>
+import { ref, computed, nextTick } from 'vue'
+import { useRouter } from 'vue-router'
+import { useMainStore } from '@/stores/main'
+
+const router = useRouter()
+const store = useMainStore()
+
+const name = ref('')
+const correo = ref('')
+const password = ref('')
+const passwordConfirm = ref('')
+
+const errorMsg = ref('')
+const cargando = computed(() => store.authLoading)
+
+// Estado visual
+const shakeSignup = ref(false)
+const nameError = ref(false)
+const emailError = ref(false)
+const passwordError = ref(false)
+const passwordConfirmError = ref(false)
+
+const resetErrors = () => {
+  nameError.value = false
+  emailError.value = false
+  passwordError.value = false
+  passwordConfirmError.value = false
+}
+
+const triggerShake = async () => {
+  shakeSignup.value = false
+  await nextTick()
+  shakeSignup.value = true
+  setTimeout(() => {
+    shakeSignup.value = false
+  }, 350)
+}
+
+// Validación de email "tipo PocketBase"
+const isValidEmail = (email) => {
+  // Aproximación razonable a lo que suele aceptar:
+  // algo@dominio.ext (sin espacios, con un punto en el dominio)
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
+const handleSubmit = async () => {
+  resetErrors()
+  errorMsg.value = ''
+
+  // 1) Campos obligatorios
+  if (!name.value || !correo.value || !password.value || !passwordConfirm.value) {
+    errorMsg.value = 'Rellena todos los campos.'
+    nameError.value = !name.value
+    emailError.value = !correo.value
+    passwordError.value = !password.value
+    passwordConfirmError.value = !passwordConfirm.value
+    await triggerShake()
+    return
+  }
+
+  // 2) Formato de correo
+  if (!isValidEmail(correo.value)) {
+    errorMsg.value = 'Introduce un correo electrónico válido.'
+    emailError.value = true
+    await triggerShake()
+    return
+  }
+
+  // 3) Longitud mínima de contraseña
+  if (password.value.length < 8) {
+    errorMsg.value = 'La contraseña debe tener al menos 8 caracteres.'
+    passwordError.value = true
+    passwordConfirmError.value = true
+    await triggerShake()
+    return
+  }
+
+  // 4) Coincidencia de contraseñas
+  if (password.value !== passwordConfirm.value) {
+    errorMsg.value = 'Las contraseñas no coinciden.'
+    passwordError.value = true
+    passwordConfirmError.value = true
+    await triggerShake()
+    return
+  }
+
+  try {
+    await store.register({
+      name: name.value,
+      email: correo.value,
+      password: password.value,
+    })
+
+    router.push('/profile')
+  } catch (err) {
+    // Aquí ya es PocketBase (email duplicado, reglas, etc.)
+    errorMsg.value = err.message || 'No se pudo crear la cuenta.'
+
+    const msg = (errorMsg.value || '').toLowerCase()
+    if (msg.includes('email') || msg.includes('correo')) {
+      emailError.value = true
+    }
+    if (msg.includes('password') || msg.includes('contraseña')) {
+      passwordError.value = true
+      passwordConfirmError.value = true
+    }
+
+    await triggerShake()
+  }
+}
+</script>
+
 <template>
-    <div class="signup">
-        <section class="signup-card">
-            <h2 class="signup-card__title">Crear cuenta</h2>
+  <div class="signup">
+    <section
+      class="signup-card"
+      :class="{ 'signup-card--shake': shakeSignup }"
+    >
+      <h2 class="signup-card__title">Crear cuenta</h2>
 
-            <div class="signup-card__row">
-                <button class="signup-card__btn" type="button">
-                    <i class="signup-card__icon fa-brands fa-google"></i>
-                    Continúa con Google
-                </button>
-            </div>
+      <div class="signup-card__row">
+        <button class="signup-card__btn signup-card__btn--google" type="button">
+          <i class="signup-card__icon fa-brands fa-google"></i>
+          Continúa con Google
+        </button>
+      </div>
 
-            <div class="signup-card__separator">o</div>
+      <div class="signup-card__separator">o</div>
 
-            <!-- Evitamos recarga de página -->
-            <form id="formRegistro" @submit.prevent>
-                <div class="signup-card__row signup-card__input-icon">
-                    <label for="name" class="signup-card__label">Nombre de Usuario</label>
-                    <i class="signup-card__icon fa-solid fa-user"></i>
-                    <input
-                        id="name"
-                        class="signup-card__input"
-                        placeholder="Tu Nombre"
-                        type="text"
-                        required
-                    />
-                </div>
+      <form id="formRegistro" @submit.prevent="handleSubmit">
+        <div
+          class="signup-card__row signup-card__input-icon"
+          :class="{ 'signup-card__row--error': nameError }"
+        >
+          <label for="name" class="signup-card__label">Nombre de Usuario</label>
+          <i class="signup-card__icon fa-solid fa-user"></i>
+          <input
+            id="name"
+            class="signup-card__input"
+            placeholder="Tu Nombre"
+            type="text"
+            required
+            v-model="name"
+          />
+        </div>
 
-                <div class="signup-card__row signup-card__input-icon">
-                    <label for="correo" class="signup-card__label">Correo electrónico</label>
-                    <i class="signup-card__icon fa-solid fa-envelope"></i>
-                    <input
-                        id="correo"
-                        class="signup-card__input"
-                        placeholder="ejemplo@gmail.com"
-                        type="email"
-                        required
-                    />
-                </div>
+        <div
+          class="signup-card__row signup-card__input-icon"
+          :class="{ 'signup-card__row--error': emailError }"
+        >
+          <label for="correo" class="signup-card__label">Correo electrónico</label>
+          <i class="signup-card__icon fa-solid fa-envelope"></i>
+          <input
+            id="correo"
+            class="signup-card__input"
+            placeholder="ejemplo@gmail.com"
+            type="email"
+            required
+            v-model="correo"
+          />
+        </div>
 
-                <div class="signup-card__row signup-card__input-icon">
-                    <label for="password" class="signup-card__label">Contraseña</label>
+        <div
+          class="signup-card__row signup-card__input-icon"
+          :class="{ 'signup-card__row--error': passwordError }"
+        >
+          <label for="password" class="signup-card__label">Contraseña</label>
 
-                    <!-- Candado SVG -->
-                    <svg
-                        class="signup-card__icon signup-card__icon--lock"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
-                        <rect
-                            x="5"
-                            y="10"
-                            width="14"
-                            height="10"
-                            rx="2"
-                            ry="2"
-                        />
-                        <path
-                            d="M9 10V7a3 3 0 0 1 6 0v3"
-                        />
-                        <circle cx="12" cy="15" r="1.3" />
-                    </svg>
+          <svg
+            class="signup-card__icon signup-card__icon--lock"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <rect
+              x="5"
+              y="10"
+              width="14"
+              height="10"
+              rx="2"
+              ry="2"
+            />
+            <path
+              d="M9 10V7a3 3 0 0 1 6 0v3"
+            />
+            <circle cx="12" cy="15" r="1.3" />
+          </svg>
 
-                    <input
-                        id="password"
-                        class="signup-card__input"
-                        placeholder="**********************"
-                        type="password"
-                        required
-                    />
-                </div>
+          <input
+            id="password"
+            class="signup-card__input"
+            placeholder="**********************"
+            type="password"
+            required
+            v-model="password"
+          />
+        </div>
 
-                <div class="signup-card__row signup-card__input-icon">
-                    <label for="passwordConfirm" class="signup-card__label">Confirmar Contraseña</label>
+        <div
+          class="signup-card__row signup-card__input-icon"
+          :class="{ 'signup-card__row--error': passwordConfirmError }"
+        >
+          <label for="passwordConfirm" class="signup-card__label">Confirmar Contraseña</label>
 
-                    <!-- Candado SVG -->
-                    <svg
-                        class="signup-card__icon signup-card__icon--lock"
-                        viewBox="0 0 24 24"
-                        aria-hidden="true"
-                    >
-                        <rect
-                            x="5"
-                            y="10"
-                            width="14"
-                            height="10"
-                            rx="2"
-                            ry="2"
-                        />
-                        <path
-                            d="M9 10V7a3 3 0 0 1 6 0v3"
-                        />
-                        <circle cx="12" cy="15" r="1.3" />
-                    </svg>
+          <svg
+            class="signup-card__icon signup-card__icon--lock"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <rect
+              x="5"
+              y="10"
+              width="14"
+              height="10"
+              rx="2"
+              ry="2"
+            />
+            <path
+              d="M9 10V7a3 3 0 0 1 6 0v3"
+            />
+            <circle cx="12" cy="15" r="1.3" />
+          </svg>
 
-                    <input
-                        id="passwordConfirm"
-                        class="signup-card__input"
-                        placeholder="**********************"
-                        type="password"
-                        required
-                    />
-                </div>
+          <input
+            id="passwordConfirm"
+            class="signup-card__input"
+            placeholder="**********************"
+            type="password"
+            required
+            v-model="passwordConfirm"
+          />
+        </div>
 
-                <div class="signup-card__row">
-                    <button id="btnCrearCuenta" type="submit" class="signup-card__btn">
-                        Crear cuenta
-                    </button>
-                </div>
-            </form>
+        <div class="signup-card__row">
+          <button
+            id="btnCrearCuenta"
+            type="submit"
+            class="signup-card__btn"
+            :disabled="cargando"
+          >
+            {{ cargando ? 'Creando cuenta...' : 'Crear cuenta' }}
+          </button>
+        </div>
 
-            <div class="signup-card__terms">
-                Al crear una cuenta, usted acepta la
-                <RouterLink to="/privacidad" class="signup-card__terms-link">
-                    Política de Privacidad
-                </RouterLink>
-                de esta página.
-            </div>
-        </section>
-    </div>
+        <Transition name="fade-slide">
+          <p v-if="errorMsg" class="signup-card__error">
+            {{ errorMsg }}
+          </p>
+        </Transition>
+      </form>
+
+      <div class="signup-card__terms">
+        Al crear una cuenta, usted acepta la
+        <RouterLink to="/privacidad" class="signup-card__terms-link">
+          Política de Privacidad
+        </RouterLink>
+        de esta página.
+      </div>
+    </section>
+  </div>
 </template>
 
 <style scoped>
@@ -141,10 +282,9 @@
         font-size: 28px;
         margin-bottom: 28px;
         text-align: center;
-        font-weight: 700; /* ahora en negrita */
+        font-weight: 700;
     }
 
-    /* Más aire entre filas (antes 18px) */
     .signup-card__row {
         margin-bottom: 22px;
         position: relative;
@@ -190,10 +330,9 @@
         pointer-events: none;
     }
 
-    /* Más separación visual antes del botón de "Crear cuenta" */
     .signup-card__row button {
         display: block;
-        margin: 16px auto 0;  /* margen superior extra */
+        margin: 16px auto 0;
     }
 
     .signup-card__btn {
@@ -207,6 +346,11 @@
         cursor: pointer;
         font-size: 15px;
         font-family: 'Itim', sans-serif;
+    }
+
+    .signup-card__btn[disabled] {
+        opacity: 0.7;
+        cursor: default;
     }
 
     .signup-card__btn--google {
@@ -226,7 +370,7 @@
         align-items: center;
         text-align: center;
         color: #666;
-        margin: 24px 0; /* un pelín más de aire también aquí si quieres */
+        margin: 24px 0;
     }
 
     .signup-card__separator::before,
@@ -253,7 +397,53 @@
     }
 
     .signup-card__terms-link {
-        color: #666;
-        text-decoration: underline;
+    color: #666;
+    text-decoration: underline;
+    }
+
+    /* Mensaje de error */
+    .signup-card__error {
+    color: #e63946;
+    font-size: 14px;
+    margin: 0;
+    text-align: left;
+    }
+
+    /* Resaltado de campos con error */
+    .signup-card__row--error .signup-card__input {
+    border-color: #e63946;
+    box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.15);
+    }
+
+    .signup-card__row--error .signup-card__icon,
+    .signup-card__row--error .signup-card__icon--lock {
+    color: #e63946;
+    stroke: #e63946;
+    }
+
+    /* Transición del mensaje */
+    .fade-slide-enter-active,
+    .fade-slide-leave-active {
+    transition: opacity 0.22s ease-out, transform 0.22s ease-out;
+    }
+
+    .fade-slide-enter-from,
+    .fade-slide-leave-to {
+    opacity: 0;
+    transform: translateY(-6px);
+    }
+
+    /* Shake del registro */
+    @keyframes signup-shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+    100% { transform: translateX(0); }
+    }
+
+    .signup-card--shake {
+    animation: signup-shake 0.3s;
     }
 </style>
