@@ -17,6 +17,14 @@ import {
     logoutUser,
 } from '@/services/usuarioService'
 
+import {
+    listarComentariosUsuario,
+    listarComentariosPorReceta,
+    crearComentario as crearComentarioService,
+    actualizarComentario as actualizarComentarioService,
+    eliminarComentario as eliminarComentarioService,
+} from '@/services/comentariosService'
+
 export const useMainStore = defineStore('main', {
     state: () => ({
         // ==== USUARIO ====
@@ -33,6 +41,16 @@ export const useMainStore = defineStore('main', {
         homeRecipes: [],
         homeLoading: false,
         homeError: null,
+
+        // ==== COMENTARIOS DEL USUARIO ====
+        myComments: [],
+        myCommentsLoading: false,
+        myCommentsError: null,
+
+        // ==== COMENTARIOS DE UNA RECETA ====
+        recipeComments: [],
+        recipeCommentsLoading: false,
+        recipeCommentsError: null,
     }),
 
     getters: {
@@ -218,6 +236,104 @@ export const useMainStore = defineStore('main', {
                 receta.likeId = originalLikeId
                 throw error
             }
+        },
+
+        // ==== COMENTARIOS DEL USUARIO ====
+        // CARGAR COMENTARIOS
+        async loadMyComments() {
+            if (!this.user) {
+                this.myComments = []
+                return
+            }
+
+            this.myCommentsLoading = true
+            this.myCommentsError = null
+            try {
+                const data = await listarComentariosUsuario(this.user.id)
+                this.myComments = data
+            } catch (err) {
+                console.error('Error cargando comentarios del usuario:', err)
+                this.myCommentsError = err?.message || 'Error cargando tus comentarios'
+                throw err
+            } finally {
+                this.myCommentsLoading = false
+            }
+        },
+
+        // MODIFICAR COMENTARIO
+        async updateMyComment(id, { texto, rating }) {
+            if (!id) throw new Error('Falta id de comentario')
+
+            const updated = await actualizarComentarioService(id, texto, rating)
+
+            this.myComments = this.myComments.map((c) =>
+                c.id === id
+                ? {
+                    ...c,
+                    texto,
+                    rating: rating ?? c.rating,
+                    updated: updated.updated ?? c.updated,
+                    }
+                : c,
+            )
+
+            return updated
+        },
+
+        // ELIMINAR COMENTARIO
+        async deleteMyComment(id) {
+            if (!id) throw new Error('Falta id de comentario')
+            await eliminarComentarioService(id)
+            this.myComments = this.myComments.filter((c) => c.id !== id)
+        },
+
+        // ==== COMENTARIOS DE UNA RECETA ====
+        // CARGAR COMENTARIOS
+        async loadCommentsForRecipe(recetaId) {
+            this.recipeCommentsLoading = true
+            this.recipeCommentsError = null
+            try {
+                const data = await listarComentariosPorReceta(recetaId)
+                this.recipeComments = data
+            } catch (err) {
+                console.error('Error cargando comentarios de la receta:', err)
+                this.recipeCommentsError = err?.message || 'Error cargando comentarios'
+                throw err
+            } finally {
+                this.recipeCommentsLoading = false
+            }
+        },
+
+        // CREAR COMENTARIO
+        async createCommentForRecipe({ recetaId, texto, rating }) {
+            if (!this.user) {
+                throw new Error('Debes iniciar sesión para comentar')
+            }
+
+            const created = await crearComentarioService({
+                recetaId,
+                userId: this.user.id,
+                texto,
+                rating,
+            })
+
+            // Añadimos al estado sin tener que recargar toda la lista
+            this.recipeComments.unshift({
+                id: created.id,
+                texto: created.comentario ?? texto,
+                rating: created.valoracion ?? rating ?? null,
+                created: created.created,
+                usuario: {
+                    id: this.user.id,
+                    nombre:
+                        this.user.name ||
+                        this.user.username ||
+                        this.user.email,
+                    email: this.user.email,
+                },
+            })
+
+            return created
         },
     },
 })

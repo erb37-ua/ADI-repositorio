@@ -64,6 +64,11 @@ const router = createRouter({
       name: 'recipe-detail',
       component: () => import('../views/RecipeDetailView.vue'),
     },
+    {
+      path: '/comments',
+      name: 'comments',
+      component: () => import('@/views/CommentsView.vue'),
+    }
   ],
 })
 

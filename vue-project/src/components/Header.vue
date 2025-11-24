@@ -1,18 +1,33 @@
 <script setup>
-import { ref } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
-import { useMainStore } from '@/stores/main'
+  import { ref } from 'vue'
+  import { RouterLink, useRouter } from 'vue-router'
+  import { useMainStore } from '@/stores/main'
 
-const router = useRouter()
-const textoBusqueda = ref('')
+  const router = useRouter()
+  const textoBusqueda = ref('')
 
-// 👉 store con info del usuario
-const store = useMainStore()
+  const store = useMainStore()
 
-// Función para buscar al pulsar Enter o clic en la lupa
-const realizarBusqueda = () => {
-  router.push({ path: '/', query: { search: textoBusqueda.value } })
-}
+  const realizarBusqueda = () => {
+    router.push({ path: '/', query: { search: textoBusqueda.value } })
+  }
+
+  // menú usuario
+  const showUserMenu = ref(false)
+
+  const toggleUserMenu = () => {
+    showUserMenu.value = !showUserMenu.value
+  }
+
+  const closeUserMenu = () => {
+    showUserMenu.value = false
+  }
+
+  const handleLogout = () => {
+    store.logout()
+    closeUserMenu()
+    router.push('/')   // o '/login' si prefieres
+  }
 </script>
 
 
@@ -41,27 +56,68 @@ const realizarBusqueda = () => {
 
       <div class="header__search">
         <img 
-            src="/lupa.png" 
-            alt="Buscar" 
-            class="header__search-icon" 
-            @click="realizarBusqueda"
-            style="cursor: pointer;"
-            draggable="false"
+          src="/lupa.png" 
+          alt="Buscar" 
+          class="header__search-icon" 
+          @click="realizarBusqueda"
+          style="cursor: pointer;"
+          draggable="false"
         />
         <input 
-            type="text" 
-            class="header__search-input" 
-            placeholder="   Buscar..." 
-            v-model="textoBusqueda"
-            @keyup.enter="realizarBusqueda"
+          type="text" 
+          class="header__search-input" 
+          placeholder="   Buscar..." 
+          v-model="textoBusqueda"
+          @keyup.enter="realizarBusqueda"
         />
       </div>
 
       <div class="header__right">
-        <RouterLink to="/profile" class="header-icon-link" draggable="false">
+        <!-- Usuario logueado: icono con desplegable -->
+        <div v-if="store.isLogged" class="user-menu">
+          <button
+            type="button"
+            class="header-icon-link user-menu__btn"
+            @click="toggleUserMenu"
+          >
+            <img 
+              src="/icono-perfil.png" 
+              alt="Perfil" 
+              class="header__profile-icon" 
+              draggable="false" 
+            />
+          </button>
+
+          <div v-if="showUserMenu" class="user-menu__dropdown">
+            <RouterLink
+              to="/profile"
+              class="user-menu__item"
+              @click="closeUserMenu"
+            >
+              Perfil
+            </RouterLink>
+            <RouterLink
+              to="/comments"
+              class="user-menu__item"
+              @click="closeUserMenu"
+            >
+              Mis comentarios
+            </RouterLink>
+            <button
+              type="button"
+              class="user-menu__item user-menu__item--logout"
+              @click="handleLogout"
+            >
+              Cerrar sesión
+            </button>
+          </div>
+        </div>
+
+        <!-- No logueado: icono lleva a login -->
+        <RouterLink v-else to="/login" class="header-icon-link" draggable="false">
           <img 
             src="/icono-perfil.png" 
-            alt="Perfil" 
+            alt="Login" 
             class="header__profile-icon" 
             draggable="false" 
           />
@@ -75,7 +131,7 @@ const realizarBusqueda = () => {
         <div class="dropdown-menu__column">
           <h3 class="dropdown-menu__title">GENERAL</h3>
           <div class="dropdown-menu__links-wrapper">
-             <RouterLink to="/" class="dropdown-menu__link"><strong>Ver Todas</strong></RouterLink>
+            <RouterLink to="/" class="dropdown-menu__link"><strong>Ver Todas</strong></RouterLink>
             <RouterLink to="/list?filter=guardados" class="dropdown-menu__link">Guardados</RouterLink>
           </div>
         </div>
@@ -103,23 +159,18 @@ const realizarBusqueda = () => {
 </template>
 
 <style scoped>
-  /* ======================================== */
-  /* ESTILOS DEL HEADER                       */
-  /* ======================================== */
-  /* Contenedor principal del header */
   .header {
     width: 100%;
     padding: 8px;
     background: #d2694c;
     border: 1px solid #c9a66b;
-    box-sizing: border-box; /* Asegura que el padding no afecte al ancho total */
+    box-sizing: border-box;
   }
 
-  /* Contenedor interno para alinear elementos (logo, nav, búsqueda) */
   .header__inner {
     display: flex;
-    align-items: center; /* Centra verticalmente */
-    justify-content: space-between; /* Distribuye espacio entre elementos */
+    align-items: center;
+    justify-content: space-between;
     width: 100%;
     height: 118px; 
     padding: 0 16px;
@@ -136,18 +187,15 @@ const realizarBusqueda = () => {
     height: 77px;
   }
 
-  /* Contenedor de la navegación principal */
   .header__nav {
     display: flex;
-    gap: 40px; /* Espacio entre enlaces */
+    gap: 40px;
     margin-left: 0;
-    white-space: nowrap; /* Evita que los enlaces salten de línea */
+    white-space: nowrap;
   }
 
-  /* Estilo para cada enlace de navegación (Recetas, Filtros, etc.) */
   .header__nav-item {
     width: auto;
-    height: 36px;
     color: #000000;
     font-family: "Itim", sans-serif;
     font-weight: 400;
@@ -162,23 +210,18 @@ const realizarBusqueda = () => {
     height: auto; 
   }
 
-  /* Hover personalizado para los botones de navegación */
   .header__nav-item:hover {
     background-color: rgba(255, 255, 255, 0.2); 
   }
 
-  /* Estilo específico para el label "FILTROS" */
   .header__nav-item--filtros {
     cursor: pointer;
   }
 
-  /* Anular el hover verde de 'main.css' en el logo y perfil */
-  /* :deep() nos permite aplicar estilos a componentes hijos (RouterLink) */
   :deep(.header-icon-link:hover) {
     background-color: transparent;
   }
 
-  /* Barra de búsqueda */
   .header__search {
     display: flex;
     align-items: center;
@@ -214,19 +257,67 @@ const realizarBusqueda = () => {
     height: 57px;
   }
 
-  /* El checkbox que controla el menú. Oculto. */
   .header__toggle-filtros {
     position: absolute;
     left: -9999px;
     opacity: 0;
   }
 
+  .user-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
 
-  /* ======================================== */
-  /* ESTILOS DEL MENÚ DESPLEGABLE             */
-  /* ======================================== */
+  .user-menu__btn {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    border-radius: 50%;
+  }
 
-  /* El contenedor del menú, oculto por defecto */
+  .user-menu__dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #c9a66b;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    min-width: 190px;
+    padding: 6px;
+    z-index: 50;
+  }
+
+  .user-menu__item {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    text-decoration: none;
+    font-family: "Itim", sans-serif;
+    font-size: 16px;
+    color: #000;
+    border-radius: 10px;
+    transition: background-color 0.15s ease;
+    text-align: left;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .user-menu__item:hover {
+    background-color: rgba(0, 0, 0, 0.06);
+  }
+
+  .user-menu__item--logout {
+    color: #b91c1c;
+  }
+
+  .user-menu__item--logout:hover {
+    background-color: rgba(185, 28, 28, 0.08);
+  }
+
   .dropdown-menu {
     width: 100%;
     background: #d2694c; 
@@ -238,7 +329,6 @@ const realizarBusqueda = () => {
     transition: all 0.3s ease-in-out;
   }
 
-  /* Contenedor interno que centra las 3 columnas */
   .dropdown-menu__inner {
     display: flex;
     justify-content: space-evenly;
@@ -250,7 +340,6 @@ const realizarBusqueda = () => {
     align-items: flex-start;
   }
 
-  /* Estilo para cada una de las 3 columnas (Favoritos, Sabores...) */
   .dropdown-menu__column {
     display: flex;
     flex-direction: column;
@@ -258,7 +347,6 @@ const realizarBusqueda = () => {
     text-align: center;
   }
 
-  /* Títulos (FAVORITOS, SABORES...) */
   .dropdown-menu__title {
     font-family: "Itim", sans-serif;
     font-size: 22px;
@@ -267,7 +355,6 @@ const realizarBusqueda = () => {
     margin-bottom: 8px;
   }
 
-  /* Contenedor de los enlaces (Guardados, Salado, Dulce...) */
   .dropdown-menu__links-wrapper {
     display: flex;
     flex-direction: row; 
@@ -276,7 +363,6 @@ const realizarBusqueda = () => {
     gap: 32px; 
   }
 
-  /* Estilo para cada enlace del desplegable */
   .dropdown-menu__link {
     font-family: "Itim", sans-serif;
     font-size: 20px;
@@ -288,25 +374,18 @@ const realizarBusqueda = () => {
     transition: background-color 0.2s ease, opacity 0.2s;
   }
 
-  /* Hover para los enlaces del desplegable */
   .dropdown-menu__link:hover {
     opacity: 1;
     text-decoration: none; 
     background-color: rgba(255, 255, 255, 0.2);
   }
 
-  /* Cuando el checkbox está ':checked', mostramos el menú */
-  /* El (~) selecciona un "hermano" que venga después */
   .header__toggle-filtros:checked ~ .dropdown-menu {
     max-height: 500px; 
     opacity: 1;
     visibility: visible;
   }
 
-
-  /* ======================================== */
-  /* ESTILOS RESPONSIVE (PANTALLAS PEQUEÑAS)  */
-  /* ======================================== */
   @media (max-width: 900px) {
     .header__inner {
       height: 118px; 
@@ -396,7 +475,7 @@ const realizarBusqueda = () => {
   }
 
   .header img {
-      user-select: none;
-      -webkit-user-drag: none;
+    user-select: none;
+    -webkit-user-drag: none;
   }
 </style>

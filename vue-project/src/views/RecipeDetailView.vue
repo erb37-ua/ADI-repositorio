@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMainStore } from '@/stores/main'
 
@@ -10,6 +10,15 @@ const store = useMainStore()
 const receta = ref(null)
 const loading = ref(true)
 
+// --- estado comentarios ---
+const commentText = ref('')
+const commentRating = ref('5')
+const submittingComment = ref(false)
+
+const comments = computed(() => store.recipeComments || [])
+const commentsLoading = computed(() => store.recipeCommentsLoading)
+const commentsError = computed(() => store.recipeCommentsError)
+
 onMounted(async () => {
     const id = route.params.id
     if (!id) {
@@ -18,9 +27,12 @@ onMounted(async () => {
     }
 
     try {
+        // datos de la receta
         receta.value = await store.fetchRecipeById(id)
+        // comentarios de esa receta
+        await store.loadCommentsForRecipe(id)
     } catch (error) {
-        console.error("Error cargando receta:", error)
+        console.error("Error cargando receta/comentarios:", error)
         alert("No se pudo cargar la receta.")
         router.push('/')
     } finally {
@@ -30,11 +42,58 @@ onMounted(async () => {
 
 // Función para convertir **Texto** en <strong>Texto</strong>
 const formatInstruction = (text) => {
-    if (!text) return '';
-    // Reemplaza los ** con etiquetas strong
-    return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    if (!text) return ''
+    return text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
 }
 
+// Formatear fecha bonita
+const formatDate = (iso) => {
+    if (!iso) return ''
+    const d = new Date(iso)
+    return d.toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    })
+}
+
+// Enviar comentario nuevo
+const handleSubmitComment = async () => {
+    if (!store.isLogged) {
+        alert('Debes iniciar sesión para comentar.')
+        router.push('/login')
+        return
+    }
+
+    if (!commentText.value.trim()) {
+        alert('El comentario no puede estar vacío.')
+        return
+    }
+
+    if (!receta.value?.id) {
+        alert('No se ha podido identificar la receta.')
+        return
+    }
+
+    submittingComment.value = true
+    try {
+        await store.createCommentForRecipe({
+            recetaId: receta.value.id,
+            texto: commentText.value.trim(),
+            rating: Number(commentRating.value),
+        })
+        // limpiar formulario
+        commentText.value = ''
+        commentRating.value = '5'
+    } catch (err) {
+        console.error('Error creando comentario:', err)
+        alert('No se pudo enviar el comentario.')
+    } finally {
+        submittingComment.value = false
+    }
+}
 </script>
 
 <template>
@@ -103,31 +162,86 @@ const formatInstruction = (text) => {
         <section class="recipe-comments">
             <div class="recipe-comments__box">
                 <h3 class="recipe-comments__title"><strong>Deja tu comentario</strong></h3>
-                <form class="recipe-comments__form" @submit.prevent>
+
+                <form class="recipe-comments__form" @submit.prevent="handleSubmitComment">
                     <div class="recipe-comments__row">
                         <label for="rating">Valoración:</label><br />
-                        <select id="rating" name="rating" class="recipe-comments__input">
+                        <select
+                            id="rating"
+                            name="rating"
+                            class="recipe-comments__input"
+                            v-model="commentRating"
+                        >
                             <option value="5">5 estrellas</option>
                             <option value="4">4 estrellas</option>
                             <option value="3">3 estrellas</option>
+                            <option value="2">2 estrellas</option>
+                            <option value="1">1 estrella</option>
                         </select>
                     </div>
                     <div class="recipe-comments__row">
                         <label for="comment">Comentario:</label><br />
-                        <textarea id="comment" class="recipe-comments__input" rows="4" placeholder="Escribe aquí..."></textarea>
+                        <textarea
+                            id="comment"
+                            class="recipe-comments__input"
+                            rows="4"
+                            placeholder="Escribe aquí..."
+                            v-model="commentText"
+                        ></textarea>
                     </div>
-                    <button type="submit" class="recipe-comments__btn">Enviar</button>
+                    <button
+                        type="submit"
+                        class="recipe-comments__btn"
+                        :disabled="submittingComment"
+                    >
+                        {{ submittingComment ? 'Enviando...' : 'Enviar' }}
+                    </button>
                 </form>
             </div>
 
             <div class="recipe-comments__list">
                 <h3 class="recipe-comments__title"><strong>Comentarios anteriores</strong></h3>
-                <div class="recipe-comments__item">
-                    <p class="recipe-comments__author"><strong>Ana</strong></p>
-                    <p class="recipe-comments__meta">28/09/2025 18:30</p>
-                    <p class="recipe-comments__stars">⭐⭐⭐⭐⭐</p>
-                    <p class="recipe-comments__text">Me encantó la receta, me salió riquísima 😍</p>
-                    <hr class="recipe-comments__divider" />
+
+                <p v-if="commentsLoading" class="recipe-comments__meta">
+                    Cargando comentarios...
+                </p>
+
+                <p v-else-if="commentsError" class="recipe-comments__meta">
+                    Error al cargar comentarios.
+                </p>
+
+                <p
+                  v-else-if="comments.length === 0"
+                  class="recipe-comments__meta"
+                >
+                    Todavía no hay comentarios.
+                </p>
+
+                <div v-else>
+                    <div
+                        v-for="comment in comments"
+                        :key="comment.id"
+                        class="recipe-comments__item"
+                    >
+                        <p class="recipe-comments__author">
+                            <strong>
+                                {{ comment.usuario?.nombre || comment.usuario?.email || 'Usuario' }}
+                            </strong>
+                        </p>
+                        <p class="recipe-comments__meta">
+                            {{ formatDate(comment.created) }}
+                        </p>
+                        <p
+                          v-if="comment.rating != null"
+                          class="recipe-comments__stars"
+                        >
+                            {{ '⭐'.repeat(comment.rating) }}
+                        </p>
+                        <p class="recipe-comments__text">
+                            {{ comment.texto }}
+                        </p>
+                        <hr class="recipe-comments__divider" />
+                    </div>
                 </div>
             </div>
         </section>
