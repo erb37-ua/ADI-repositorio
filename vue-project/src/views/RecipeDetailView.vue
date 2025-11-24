@@ -1,10 +1,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { obtenerReceta } from '@/services/recetasService.js'
+import { useMainStore } from '@/stores/main'
 
 const route = useRoute()
 const router = useRouter()
+const store = useMainStore()
 
 const receta = ref(null)
 const loading = ref(true)
@@ -17,7 +18,7 @@ onMounted(async () => {
     }
 
     try {
-        receta.value = await obtenerReceta(id)
+        receta.value = await store.fetchRecipeById(id)
     } catch (error) {
         console.error("Error cargando receta:", error)
         alert("No se pudo cargar la receta.")

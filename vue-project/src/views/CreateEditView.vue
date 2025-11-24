@@ -1,10 +1,12 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { createReceta, obtenerReceta, actualizarReceta } from '@/services/recetasService.js'
+import { useMainStore } from '@/stores/main'
 
 const router = useRouter()
 const route = useRoute()
+const store = useMainStore()
+
 
 // Variables principales
 const titulo = ref('')
@@ -28,7 +30,7 @@ const recipeId = route.params.id
 onMounted(async () => {
     if (isEditMode.value) {
         try {
-            const receta = await obtenerReceta(recipeId)
+            const receta = await store.fetchRecipeById(recipeId)
             
             titulo.value = receta.titulo
             descripcion.value = receta.descripcion
@@ -126,10 +128,10 @@ const handleSubmit = async () => {
 
     try {
         if (isEditMode.value) {
-            await actualizarReceta(recipeId, formData)
+            await store.updateRecipe(recipeId, formData)
             alert("¡Receta actualizada correctamente!")
         } else {
-            await createReceta(formData)
+            await store.createRecipe(formData)
             alert("¡Receta creada correctamente!")
         }
         router.push('/list')

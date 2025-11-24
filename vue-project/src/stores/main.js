@@ -3,6 +3,9 @@ import { listarRecetas,
     eliminarReceta as eliminarRecetaService,
     createReceta as createRecetaService,
     actualizarReceta as actualizarRecetaService,
+    obtenerReceta,
+    obtenerRecetasInicio,
+    toggleLike as toggleLikeService,
 } from '@/services/recetasService'
 
 import {
@@ -16,23 +19,31 @@ import {
 
 export const useMainStore = defineStore('main', {
     state: () => ({
-        // USUARIO
+        // ==== USUARIO ====
         user: getCurrentUser(), 
         authLoading: false,
         authError: null,
 
-        // RECETAS
+        // ==== RECETAS ====
         recipes: [],
         recipesLoading: false,
         recipesError: null,
+
+        // ==== HOME (recetas + likes) ====
+        homeRecipes: [],
+        homeLoading: false,
+        homeError: null,
     }),
 
     getters: {
         isLogged: (state) => !!state.user,
+        isAdmin: (state) =>
+            !!state.user && state.user.email === 'fmpp3@alu.ua.es',
     },
 
     actions: {
 
+        // ==== USUARIO ====
         // LOGIN
         async login(email, password) {
             this.authLoading = true
@@ -107,46 +118,106 @@ export const useMainStore = defineStore('main', {
             this.logout()
         },
 
-        // ============ RECETAS ============
-
+        // ==== RECETAS ====
+        // CARGAR RECETAS
         async loadRecipes(filtroCategoria = '') {
-        this.recipesLoading = true
-        this.recipesError = null
-        try {
-            const data = await listarRecetas(filtroCategoria)
-            this.recipes = data.map((r) => ({
-            id: r.id,
-            title: r.titulo,
-            description: r.descripcion,
-            category: r.categoria || [],
-            image: r.imagenUrl,
-            }))
-        } catch (error) {
-            console.error('Error cargando recetas:', error)
-            this.recipesError = error?.message || 'Error cargando recetas'
-            throw error
-        } finally {
-            this.recipesLoading = false
-        }
+            this.recipesLoading = true
+            this.recipesError = null
+            try {
+                const data = await listarRecetas(filtroCategoria)
+                this.recipes = data.map((r) => ({
+                id: r.id,
+                title: r.titulo,
+                description: r.descripcion,
+                category: r.categoria || [],
+                image: r.imagenUrl,
+                }))
+            } catch (error) {
+                console.error('Error cargando recetas:', error)
+                this.recipesError = error?.message || 'Error cargando recetas'
+                throw error
+            } finally {
+                this.recipesLoading = false
+            }
         },
 
+        // OBTENER RECETA
+        async fetchRecipeById(id) {
+            // Devuelve la receta con { id, titulo, descripcion, imagenUrl, ingredientes, pasos, categoria, raw }
+            return await obtenerReceta(id)
+        },
+
+        // BORRAR LA RECETA
         async deleteRecipe(id) {
-        await eliminarRecetaService(id)
-        this.recipes = this.recipes.filter((r) => r.id !== id)
+            await eliminarRecetaService(id)
+            this.recipes = this.recipes.filter((r) => r.id !== id)
         },
 
+        // CREAR RECETA
         async createRecipe(data) {
-        const created = await createRecetaService(data)
-        await this.loadRecipes()
-        return created
+            const created = await createRecetaService(data)
+            await this.loadRecipes()
+            return created
         },
 
+        //MODIFICAR RECETA
         async updateRecipe(id, data) {
-        const updated = await actualizarRecetaService(id, data)
-        this.recipes = this.recipes.map((r) =>
-            r.id === id ? { ...r, ...data } : r
-        )
-        return updated
+            const updated = await actualizarRecetaService(id, data)
+            this.recipes = this.recipes.map((r) =>
+                r.id === id ? { ...r, ...data } : r
+            )
+            return updated
+        },
+
+        // ==== HOME (recetas + likes) ====
+        async loadHomeRecipes() {
+            this.homeLoading = true
+            this.homeError = null
+            try {
+                const data = await obtenerRecetasInicio()
+                // data ya viene con: id, titulo, imagen, categoria, comentarios, liked, likeId
+                this.homeRecipes = data
+            } catch (error) {
+                console.error('Error cargando recetas de inicio:', error)
+                this.homeError = error?.message || 'Error cargando recetas de inicio'
+                throw error
+            } finally {
+                this.homeLoading = false
+            }
+        },
+
+        async toggleLikeReceta(recetaId) {
+            // buscamos la receta en el estado
+            const receta = this.homeRecipes.find((r) => r.id === recetaId)
+            if (!receta) return
+
+            const originalLiked = receta.liked
+            const originalLikeId = receta.likeId
+
+            // optimista: cambiamos en local
+            receta.liked = !receta.liked
+
+            try {
+                const resultado = await toggleLikeService({
+                id: receta.id,
+                liked: receta.liked,
+                likeId: receta.likeId,
+                })
+
+                if (resultado) {
+                receta.liked = resultado.liked
+                receta.likeId = resultado.likeId
+                } else {
+                // si el servicio devolviese null, revertimos
+                receta.liked = originalLiked
+                receta.likeId = originalLikeId
+                }
+            } catch (error) {
+                // en error, revertimos cambios
+                receta.liked = originalLiked
+                receta.likeId = originalLikeId
+                throw error
+            }
         },
     },
 })

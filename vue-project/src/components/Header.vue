@@ -1,20 +1,20 @@
 <script setup>
 import { ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
+import { useMainStore } from '@/stores/main'
 
 const router = useRouter()
 const textoBusqueda = ref('')
 
+// 👉 store con info del usuario
+const store = useMainStore()
+
 // Función para buscar al pulsar Enter o clic en la lupa
 const realizarBusqueda = () => {
-  // Redirigimos al home (path: '/') con el parámetro de búsqueda 'search'
-  // Usamos 'replace' o 'push' para navegar
   router.push({ path: '/', query: { search: textoBusqueda.value } })
-  
-  // Opcional: Limpiar el campo tras buscar, aunque suele ser mejor dejarlo para que el usuario vea qué buscó
-  // textoBusqueda.value = '' 
 }
 </script>
+
 
 <template>
   <header class="header">
@@ -28,7 +28,9 @@ const realizarBusqueda = () => {
       </div>
 
       <nav class="header__nav">
-        <RouterLink to="/list" class="header__nav-item">RECETAS</RouterLink>
+        <RouterLink v-if="store.isAdmin" to="/list" class="header__nav-item">
+          RECETAS
+        </RouterLink>
         
         <label for="toggle-filtros" class="header__nav-item header__nav-item--filtros">
           FILTROS

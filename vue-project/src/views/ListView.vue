@@ -1,35 +1,22 @@
 <script setup>
     import { ref, computed, onMounted } from 'vue'
     import { RouterLink, useRouter } from 'vue-router'
-    import { listarRecetas, eliminarReceta } from '@/services/recetasService.js'
+    import { useMainStore } from '@/stores/main'
 
     const router = useRouter()
-
-    const recipes = ref([])
-    const loading = ref(true)
+    const store = useMainStore()
 
     const filterCategory = ref('')
     const currentPage = ref(1)
     const pageSize = 4
 
-    // --- CARGAR DATOS ---
+    // --- CARGAR DATOS DESDE PINIA ---
     const loadRecipes = async () => {
-        loading.value = true
         try {
-            const data = await listarRecetas()
-            
-            recipes.value = data.map(r => ({
-                id: r.id,
-                title: r.titulo,
-                description: r.descripcion,
-                category: r.categoria || [], 
-                image: r.imagenUrl
-            }))
+            await store.loadRecipes()
         } catch (error) {
-            console.error("Error cargando recetas:", error)
-            alert("Hubo un error al cargar las recetas.")
-        } finally {
-            loading.value = false
+            console.error('Error cargando recetas:', error)
+            alert('Hubo un error al cargar las recetas.')
         }
     }
 
@@ -40,18 +27,18 @@
     // --- COMPUTED ---
     const filteredRecipes = computed(() =>
         filterCategory.value
-            ? recipes.value.filter(r => r.category.includes(filterCategory.value))
-            : recipes.value
+            ? store.recipes.filter((r) => r.category.includes(filterCategory.value))
+            : store.recipes,
     )
 
     const totalPages = computed(() =>
-        Math.max(1, Math.ceil(filteredRecipes.value.length / pageSize))
+        Math.max(1, Math.ceil(filteredRecipes.value.length / pageSize)),
     )
 
     const paginatedRecipes = computed(() => {
         const start = (currentPage.value - 1) * pageSize
         return filteredRecipes.value.slice(start, start + pageSize)
-    })
+        })
 
     // --- FUNCIONES ---
     const changeFilter = (event) => {
@@ -65,73 +52,115 @@
     }
 
     const handleDelete = async (id) => {
-        if (!confirm("¿Estás seguro de que quieres eliminar esta receta?")) return
+        if (!confirm('¿Estás seguro de que quieres eliminar esta receta?')) return
 
         try {
-            await eliminarReceta(id)
-            recipes.value = recipes.value.filter(r => r.id !== id)
+            await store.deleteRecipe(id)
             if (currentPage.value > totalPages.value) currentPage.value = totalPages.value
         } catch (error) {
-            console.error("Error eliminando:", error)
-            alert("No se pudo eliminar la receta.")
+            console.error('Error eliminando:', error)
+            alert('No se pudo eliminar la receta.')
         }
     }
 
     const handleEdit = (id) => {
-        router.push(`/create-edit/${id}`) 
+        router.push(`/create-edit/${id}`)
     }
 </script>
 
 <template>
     <div class="recipes">
         <div class="recipes__controls">
-            <select class="recipes__filter" :value="filterCategory" @change="changeFilter">
-                <option value="">Todo</option>
-                <option value="Desayuno">Desayuno</option>
-                <option value="Comida">Comida</option>
-                <option value="Cena">Cena</option>
-                <option value="Salado">Salado</option>
-                <option value="Dulce">Dulce</option>
-            </select>
+        <select class="recipes__filter" :value="filterCategory" @change="changeFilter">
+            <option value="">Todo</option>
+            <option value="Desayuno">Desayuno</option>
+            <option value="Comida">Comida</option>
+            <option value="Cena">Cena</option>
+            <option value="Salado">Salado</option>
+            <option value="Dulce">Dulce</option>
+        </select>
 
-            <RouterLink to="/create-edit" class="recipes__button">Añadir receta</RouterLink>
+        <RouterLink to="/create-edit" class="recipes__button">
+            Añadir receta
+        </RouterLink>
         </div>
 
-        <div v-if="loading" style="text-align:center; padding: 20px;">Cargando recetas...</div>
-        <div v-else-if="recipes.length === 0" style="text-align:center; padding: 20px;">No hay recetas disponibles.</div>
+        <div v-if="store.recipesLoading" style="text-align:center; padding: 20px;">
+        Cargando recetas...
+        </div>
+        <div
+        v-else-if="store.recipes.length === 0"
+        style="text-align:center; padding: 20px;"
+        >
+        No hay recetas disponibles.
+        </div>
 
         <div v-else class="recipes__list">
-            <article v-for="recipe in paginatedRecipes" :key="recipe.id" class="recipes__card">
-                <img 
-                    :src="recipe.image || '/placeholder.jpg'" 
-                    :alt="recipe.title" 
-                    class="recipes__card-image" 
-                    @error="$event.target.src = '/placeholder.jpg'"
+            <article
+                v-for="recipe in paginatedRecipes"
+                :key="recipe.id"
+                class="recipes__card"
+            >
+                <img
+                :src="recipe.image || '/placeholder.jpg'"
+                :alt="recipe.title"
+                class="recipes__card-image"
+                @error="$event.target.src = '/placeholder.jpg'"
                 />
                 <div class="recipes__card-info">
-                    <h3 class="recipes__card-title">{{ recipe.title }}</h3>
-                    <p class="recipes__card-description">{{ recipe.description }}</p>
+                <h3 class="recipes__card-title">{{ recipe.title }}</h3>
+                <p class="recipes__card-description">
+                    {{ recipe.description }}
+                </p>
                 </div>
                 <div class="recipes__card-actions">
-                    <button type="button" class="recipes__card-button" @click="handleEdit(recipe.id)">Editar</button>
-                    <button type="button" class="recipes__card-button" @click="handleDelete(recipe.id)">Eliminar</button>
+                <button
+                    type="button"
+                    class="recipes__card-button"
+                    @click="handleEdit(recipe.id)"
+                >
+                    Editar
+                </button>
+                <button
+                    type="button"
+                    class="recipes__card-button"
+                    @click="handleDelete(recipe.id)"
+                >
+                    Eliminar
+                </button>
                 </div>
-            </article>
+        </article>
         </div>
 
-        <nav v-if="recipes.length > 0" class="recipes__pagination" aria-label="Paginación">
-            <button type="button" class="recipes__page-link" @click="setPage(currentPage - 1)">«</button>
-            <button
-                v-for="page in totalPages"
-                :key="page"
-                type="button"
-                class="recipes__page-link"
-                :class="{ 'recipes__page-link--active': page === currentPage }"
-                @click="setPage(page)"
-            >
-                {{ page }}
-            </button>
-            <button type="button" class="recipes__page-link" @click="setPage(currentPage + 1)">»</button>
+        <nav
+        v-if="store.recipes.length > 0"
+        class="recipes__pagination"
+        aria-label="Paginación"
+        >
+        <button
+            type="button"
+            class="recipes__page-link"
+            @click="setPage(currentPage - 1)"
+        >
+            «
+        </button>
+        <button
+            v-for="page in totalPages"
+            :key="page"
+            type="button"
+            class="recipes__page-link"
+            :class="{ 'recipes__page-link--active': page === currentPage }"
+            @click="setPage(page)"
+        >
+            {{ page }}
+        </button>
+        <button
+            type="button"
+            class="recipes__page-link"
+            @click="setPage(currentPage + 1)"
+        >
+            »
+        </button>
         </nav>
     </div>
 </template>
