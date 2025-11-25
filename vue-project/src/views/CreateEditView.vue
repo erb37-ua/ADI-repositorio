@@ -7,7 +7,6 @@ const router = useRouter()
 const route = useRoute()
 const store = useMainStore()
 
-
 // Variables principales
 const titulo = ref('')
 const descripcion = ref('')
@@ -15,9 +14,11 @@ const categoriaSelect = ref('')
 const categoriasSeleccionadas = ref([])
 const imagenPreview = ref('/subir.png')
 const imagenFile = ref(null)
+// Controla el texto del botón: true = "Selecciona", false = "Cambiar"
+const isDefaultImage = ref(true)
+const isShaking = ref(false)
 
 // Estructuras de datos para el JSON
-// Inicializamos ingredientes con una sección por defecto si está vacío
 const ingredientes = ref([
     { section: 'Ingredientes Principales', items: [{ amount: '', name: '' }] }
 ])
@@ -34,22 +35,19 @@ onMounted(async () => {
             
             titulo.value = receta.titulo
             descripcion.value = receta.descripcion
-            
-            // Cargar Categorías
             categoriasSeleccionadas.value = Array.isArray(receta.categoria) ? receta.categoria : []
             
-            // Cargar Ingredientes (JSON Estructurado)
             if (receta.ingredientes && Array.isArray(receta.ingredientes) && receta.ingredientes.length > 0) {
                 ingredientes.value = receta.ingredientes
             }
-
-            // Cargar Pasos (JSON Estructurado)
             if (receta.pasos && Array.isArray(receta.pasos) && receta.pasos.length > 0) {
                 pasos.value = receta.pasos
             }
             
+            // Si hay imagen guardada, la mostramos y actualizamos el estado
             if (receta.imagenUrl) {
                 imagenPreview.value = receta.imagenUrl
+                isDefaultImage.value = false 
             }
         } catch (error) {
             console.error("Error cargando receta:", error)
@@ -59,41 +57,28 @@ onMounted(async () => {
     }
 })
 
-// --- LÓGICA DE INGREDIENTES ---
-const addIngredientSection = () => {
-    ingredientes.value.push({ section: 'Nueva Sección', items: [{ amount: '', name: '' }] })
-}
-const removeIngredientSection = (index) => {
-    ingredientes.value.splice(index, 1)
-}
-const addIngredientItem = (sectionIndex) => {
-    ingredientes.value[sectionIndex].items.push({ amount: '', name: '' })
-}
-const removeIngredientItem = (sectionIndex, itemIndex) => {
-    ingredientes.value[sectionIndex].items.splice(itemIndex, 1)
-}
+// --- LÓGICA AUXILIAR ---
+const addIngredientSection = () => ingredientes.value.push({ section: 'Nueva Sección', items: [{ amount: '', name: '' }] })
+const removeIngredientSection = (index) => ingredientes.value.splice(index, 1)
+const addIngredientItem = (sectionIndex) => ingredientes.value[sectionIndex].items.push({ amount: '', name: '' })
+const removeIngredientItem = (sectionIndex, itemIndex) => ingredientes.value[sectionIndex].items.splice(itemIndex, 1)
 
-// --- LÓGICA DE PASOS ---
-const addStep = () => {
-    pasos.value.push({ number: pasos.value.length + 1, instruction: '' })
-}
+const addStep = () => pasos.value.push({ number: pasos.value.length + 1, instruction: '' })
 const removeStep = (index) => {
     pasos.value.splice(index, 1)
-    // Recalcular números de paso
     pasos.value.forEach((step, i) => step.number = i + 1)
 }
 
-// --- MANEJO DE IMAGEN ---
 const handleImagenChange = (event) => {
     const file = event.target.files?.[0]
     if (!file) return
     imagenFile.value = file
+    isDefaultImage.value = false // Cambiamos estado al subir archivo
     const reader = new FileReader()
     reader.onload = (e) => imagenPreview.value = e.target?.result || '/subir.png'
     reader.readAsDataURL(file)
 }
 
-// --- CATEGORÍAS ---
 const handleCategoriaAdd = () => {
     const value = categoriaSelect.value
     if (!value) return
@@ -106,18 +91,23 @@ const removeCategoria = (cat) => {
     categoriasSeleccionadas.value = categoriasSeleccionadas.value.filter(c => c !== cat)
 }
 
+const triggerShake = () => {
+    isShaking.value = true
+    setTimeout(() => { isShaking.value = false }, 500)
+}
+
 // --- GUARDAR / CREAR ---
 const handleSubmit = async () => {
-    if (!titulo.value || categoriasSeleccionadas.value.length === 0) {
-        alert("Debes añadir al menos el título y una categoría.")
+    // Validación: Título, Categoría e Imagen obligatorios
+    if (!titulo.value || categoriasSeleccionadas.value.length === 0 || isDefaultImage.value) {
+        triggerShake()
+        alert("Debes añadir al menos el título, una categoría y la imagen.")
         return
     }
 
     const formData = new FormData()
     formData.append("titulo", titulo.value)
     formData.append("descripcion", descripcion.value)
-    
-    // Enviamos los objetos JSON tal cual
     formData.append("ingredientes", JSON.stringify(ingredientes.value))
     formData.append("pasos", JSON.stringify(pasos.value))
     formData.append("categoria", JSON.stringify(categoriasSeleccionadas.value))
@@ -137,7 +127,8 @@ const handleSubmit = async () => {
         router.push('/list')
     } catch (error) {
         console.error("Error guardando:", error)
-        alert("Hubo un error: " + error.message)
+        triggerShake()
+        alert("Hubo un error al guardar: " + error.message)
     }
 }
 
@@ -154,9 +145,26 @@ const handleCancelar = () => router.push('/list')
             <div class="form-card__body">
                 <div class="form-card__image">
                     <img :src="imagenPreview" alt="Imagen receta" @error="imagenPreview = '/subir.png'" />
-                    <label class="custom-file-upload">
-                        <input type="file" id="imagenInput" accept="image/*" @change="handleImagenChange" />
-                        Cambiar imagen
+                    
+                    <input 
+                        type="file" 
+                        id="imagenInput" 
+                        accept="image/*" 
+                        @change="handleImagenChange" 
+                        class="hidden-input"
+                    />
+                    
+                    <label for="imagenInput" class="upload-btn-container">
+                        <div class="upload-box-icon">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                        </div>
+                        <span class="upload-text">
+                            {{ isDefaultImage ? 'Selecciona una imagen' : 'Cambiar imagen' }}
+                        </span>
                     </label>
                 </div>
 
@@ -171,7 +179,11 @@ const handleCancelar = () => router.push('/list')
                     <div class="dynamic-list">
                         <div v-for="(section, sIndex) in ingredientes" :key="sIndex" class="ingredient-section">
                             <div class="section-header">
-                                <input v-model="section.section" placeholder="Nombre de sección (ej. Para la salsa)" class="input-subtle">
+                                <input 
+                                    v-model="section.section" 
+                                    placeholder="Nombre de sección (ej. Para la salsa)" 
+                                    class="input-section-title"
+                                >
                                 <button type="button" class="btn-icon-delete" @click="removeIngredientSection(sIndex)" v-if="ingredientes.length > 1">✕</button>
                             </div>
                             
@@ -216,7 +228,12 @@ const handleCancelar = () => router.push('/list')
 
             <div class="form-card__actions">
                 <button class="form-card__button form-card__button--secondary" type="button" @click="handleCancelar">Cancelar</button>
-                <button class="form-card__button form-card__button--primary" type="button" @click="handleSubmit">
+                <button 
+                    class="form-card__button form-card__button--primary" 
+                    :class="{ 'shake': isShaking }"
+                    type="button" 
+                    @click="handleSubmit"
+                >
                     {{ isEditMode ? 'Guardar' : 'Crear' }}
                 </button>
             </div>
@@ -225,21 +242,36 @@ const handleCancelar = () => router.push('/list')
 </template>
 
 <style scoped>
+    /* FUENTE GLOBAL */
     .container { 
-        max-width: 1000px; margin: 0 auto; padding: 40px 20px 120px; 
-        display: flex; justify-content: center; 
+        max-width: 1000px; 
+        margin: 0 auto; 
+        padding: 40px 20px 120px; 
+        display: flex; 
+        justify-content: center; 
+        font-family: 'Itim', sans-serif;
     }
+
     .form-card { 
-        background: var(--card); border-radius: var(--radius); padding: var(--pad); 
-        border: 2px solid var(--dark); /* Fallback por si no existe var */
-        width: 100%; text-align: center; 
+        background: var(--card); 
+        border-radius: var(--radius); 
+        padding: var(--pad); 
+        border: 2px solid var(--dark); 
+        width: 100%; 
+        text-align: center; 
     }
+
     .form-card__title { 
         margin-bottom: 28px;
         font-weight: bold; 
+        font-size: 2.2rem; 
+        color: var(--dark);
     }
+
     .form-card__body { 
-        display: flex; gap: 40px; align-items: flex-start; 
+        display: flex; 
+        gap: 40px; 
+        align-items: flex-start; 
     }
     
     @media (max-width: 768px) {
@@ -249,6 +281,7 @@ const handleCancelar = () => router.push('/list')
         }
     }
 
+    /* IMAGEN */
     .form-card__image { 
         width: 280px; 
         flex-shrink: 0; 
@@ -266,33 +299,74 @@ const handleCancelar = () => router.push('/list')
         border: 1px solid #ccc; 
         background: #f0f0f0; 
     }
-    
+
+    .hidden-input { display: none; }
+
+    .upload-btn-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        margin-top: 5px;
+    }
+
+    /* ICONO CUADRADO GRIS */
+    .upload-box-icon {
+        width: 45px;
+        height: 45px;
+        background-color: #e9e9e9; 
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #666;
+        border: 1px solid #ccc;
+        transition: background-color 0.2s;
+    }
+
+    .upload-box-icon:hover { background-color: #d6d6d6; }
+
+    .upload-text {
+        font-size: 1rem;
+        color: var(--dark);
+        font-weight: bold;
+        text-decoration: underline;
+    }
+
+    /* FORMULARIO DERECHA */
     .form-card__content { 
-        flex: 1; text-align: left; 
+        flex: 1; 
+        text-align: left; 
         width: 100%; 
     }
 
     .form-card__label { 
         display: block; 
-        margin-bottom: 6px; 
+        margin-bottom: 8px; 
         font-weight: bold; 
+        font-size: 1.3rem; 
+        color: #333;
     }
 
-    .mt-4 { 
-        margin-top: 20px; 
-    }
+    .mt-4 { margin-top: 25px; }
 
-    /* Estilos de Inputs Generales */
     .form-card__input { 
-        width: 100%; padding: 10px; border-radius: 10px; 
-        border: 2px solid var(--dark); margin-bottom: 15px; 
-        font-family: "Itim"; font-size: 1rem; box-sizing: border-box;
+        width: 100%; 
+        padding: 12px; 
+        border-radius: 10px; 
+        border: 2px solid var(--dark); 
+        margin-bottom: 15px; 
+        font-family: "Itim", sans-serif;
+        font-size: 1.1rem; 
+        box-sizing: border-box;
     }
 
-    /* Estilos Listas Dinámicas (Ingredientes/Pasos) */
+    /* LISTAS DINÁMICAS */
     .dynamic-list { 
         background: #f9f9f9; 
-        padding: 15px; border-radius: 10px; 
+        padding: 20px; 
+        border-radius: 10px; 
         border: 1px solid #eee; 
     }
 
@@ -308,12 +382,18 @@ const handleCancelar = () => router.push('/list')
         margin-bottom: 8px; 
     }
 
-    .input-subtle { 
-        border: none; 
-        background: transparent; 
+    /* INPUT TÍTULO SECCIÓN (Borde y Fondo Blanco) */
+    .input-section-title { 
+        border: 1px solid #ccc; 
+        background: #fff; 
         font-weight: bold; 
-        color: #555; 
+        color: #333; 
         width: 100%;
+        font-size: 1.1rem;
+        font-family: "Itim", sans-serif;
+        padding: 8px 12px;
+        border-radius: 6px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
     
     .ingredient-row, .step-row { 
@@ -324,10 +404,11 @@ const handleCancelar = () => router.push('/list')
     }
 
     .input-small { 
-        width: 120px; 
+        width: 100px; 
         padding: 8px; 
         border: 1px solid #ccc; 
         border-radius: 5px; 
+        font-family: "Itim", sans-serif;
     }
 
     .input-flex { 
@@ -335,6 +416,7 @@ const handleCancelar = () => router.push('/list')
         padding: 8px; 
         border: 1px solid #ccc; 
         border-radius: 5px; 
+        font-family: "Itim", sans-serif;
     }
 
     .step-input { 
@@ -345,28 +427,28 @@ const handleCancelar = () => router.push('/list')
     .step-number { 
         font-weight: bold; 
         background: #ddd; 
-        width: 25px; 
-        height: 25px; 
+        width: 28px; 
+        height: 28px; 
         border-radius: 50%; 
         display: flex; 
         align-items: center; 
         justify-content: center; 
-        font-size: 0.9rem; 
+        font-size: 1rem; 
     }
 
-    /* Botones pequeños dentro del formulario */
+    /* BOTONES PEQUEÑOS */
     .btn-icon-delete { 
         background: #ff4d4d; 
         color: white; 
         border: none; 
-        width: 24px; 
-        height: 24px; 
+        width: 26px; 
+        height: 26px; 
         border-radius: 50%; 
         cursor: pointer; 
         display: flex; 
         align-items: center; 
         justify-content: center; 
-        font-size: 12px; 
+        font-size: 14px; 
     }
 
     .btn-text-add { 
@@ -374,9 +456,12 @@ const handleCancelar = () => router.push('/list')
         border: none; 
         color: var(--dark); 
         cursor: pointer; 
-        font-size: 0.9rem; 
+        font-size: 1rem; 
+        font-weight: bold;
         margin-top: 5px; 
+        font-family: "Itim", sans-serif;
     }
+    .btn-text-add:hover { text-decoration: underline; }
 
     .btn-secondary-small { 
         background: #e2e6ea; 
@@ -384,19 +469,16 @@ const handleCancelar = () => router.push('/list')
         padding: 8px 15px; 
         border-radius: 15px; 
         cursor: pointer; 
-        font-size: 0.9rem; 
+        font-size: 0.95rem; 
         margin-top: 10px; 
+        font-family: "Itim", sans-serif;
     }
+    .btn-secondary-small:hover { background: #dbe0e5; }
 
-    .btn-secondary-small:hover { 
-        background: #dbe0e5; 
-    }
-
-    /* Categorías */
     .categoria-seleccionadas { 
         display: flex; 
         flex-wrap: wrap; 
-        gap: 8px;
+        gap: 8px; 
         margin-top: -5px; 
         margin-bottom: 20px; 
     }
@@ -405,42 +487,58 @@ const handleCancelar = () => router.push('/list')
         color: #333; 
         padding: 5px 12px; 
         border-radius: 15px; 
-        font-size: 0.9rem; 
+        font-size: 1rem; 
         cursor: pointer; 
     }
 
-    /* Botones Principales (Fix Transparencia) */
+    /* BOTONES PRINCIPALES */
     .form-card__actions { 
         display: flex; 
         gap: 40px; 
-        margin-top: 30px; 
+        margin-top: 40px; 
         justify-content: center; 
     }
 
     .form-card__button { 
-        padding: 12px 35px; 
+        padding: 12px 40px; 
         border-radius: 25px; 
         cursor: pointer; 
         border: none; 
-        font-size: 18px; 
-        font-family: 'Itim'; 
+        font-size: 1.2rem; 
+        font-family: 'Itim', sans-serif; 
+        transition: background-color 0.2s, opacity 0.2s;
     }
     
     .form-card__button--primary { 
         background-color: var(--dark);
         color: #fff; 
     }
-
     .form-card__button--primary:hover { 
-        background-color: var(--dark-hover); 
+        background-color: var(--dark); 
+        opacity: 0.9; 
     }
 
     .form-card__button--secondary { 
         background: #ccc; 
         color: #333; 
     }
+    .form-card__button--secondary:hover { background: #bbb; }
 
-    .form-card__button--secondary:hover { 
-        background: #bbb; 
+    /* ANIMACIÓN DE TEMBLOR */
+    @keyframes shake {
+        0% { transform: translateX(0); }
+        20% { transform: translateX(-4px); }
+        40% { transform: translateX(4px); }
+        60% { transform: translateX(-4px); }
+        80% { transform: translateX(4px); }
+        100% { transform: translateX(0); }
+    }
+
+    .shake {
+        animation: shake 0.4s ease;
+    }
+
+    :deep(.shake) {
+        animation: shake 0.4s ease;
     }
 </style>

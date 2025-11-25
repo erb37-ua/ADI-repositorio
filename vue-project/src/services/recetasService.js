@@ -6,7 +6,7 @@ import { pb } from "./pb.js";
 export async function listarRecetas(filtroCategoria = "") {
     try {
         let options = {
-            sort: "-created" // Recientes primero
+            sort: "-created"
         };
 
         if (filtroCategoria) {
@@ -15,7 +15,6 @@ export async function listarRecetas(filtroCategoria = "") {
 
         const records = await pb.collection("recetas").getFullList(options);
 
-        // Mapear datos
         return records.map(r => ({
             id: r.id,
             titulo: r.titulo,
@@ -32,7 +31,7 @@ export async function listarRecetas(filtroCategoria = "") {
     }
 }
 
-// Obtener una sola receta por ID (Para editar)
+// Obtener una sola receta por ID
 export async function obtenerReceta(id) {
     try {
         const r = await pb.collection("recetas").getOne(id);
@@ -54,7 +53,6 @@ export async function obtenerReceta(id) {
 
 // --- ESCRIBIR ---
 
-// Crear nueva receta
 export async function createReceta(data) {
     try {
         return await pb.collection("recetas").create(data);
@@ -64,7 +62,6 @@ export async function createReceta(data) {
     }
 }
 
-// Actualizar receta existente
 export async function actualizarReceta(id, data) {
     if (!id) throw new Error("ID no proporcionado para actualizar");
     try {
@@ -75,7 +72,6 @@ export async function actualizarReceta(id, data) {
     }
 }
 
-// Eliminar receta
 export async function eliminarReceta(id) {
     if (!id) throw new Error("ID no proporcionado");
     try {
@@ -90,31 +86,48 @@ export async function eliminarReceta(id) {
 
 export async function obtenerRecetasInicio() {
     try {
-        // 1. Obtener recetas
+        // 1. Obtener todas las recetas
         const records = await pb.collection("recetas").getFullList({
             sort: "-created",
         });
 
-        // 2. Obtener likes del usuario actual (si está logueado)
+        // 2. Obtener TODOS los comentarios (solo necesitamos saber a qué receta pertenecen)
+        // Pedimos solo el campo 'receta' para que la carga sea ligera
+        let todosLosComentarios = [];
+        try {
+            todosLosComentarios = await pb.collection("comentarios").getFullList({
+                fields: "receta", 
+            });
+        } catch (e) {
+            console.log("No se pudieron cargar comentarios (o no hay):", e);
+        }
+
+        // 3. Obtener likes del usuario actual
         let misLikes = [];
         if (pb.authStore.isValid) {
             try {
                 misLikes = await pb.collection("likes").getFullList({
                     filter: `usuario = "${pb.authStore.model.id}"`,
                 });
-            } catch (e) { /* Ignorar error si no hay likes */ }
+            } catch (e) { }
         }
 
-        // 3. Mapear datos para el Home
+        // 4. Mapear datos combinando todo
         return records.map(r => {
             const likeRecord = misLikes.find(l => l.receta === r.id);
+            
+            // CONTAR COMENTARIOS: Filtramos la lista total buscando coincidencias
+            const numComentarios = todosLosComentarios.filter(c => c.receta === r.id).length;
             
             return {
                 id: r.id,
                 titulo: r.titulo,
-                imagen: r.imagen ? pb.files.getURL(r, r.imagen) : '/receta-ramen.jpg',
+                imagen: r.imagen ? pb.files.getURL(r, r.imagen) : '/receta-ramen.jpg', 
                 categoria: parseJSONField(r.categoria),
-                comentarios: 0, 
+                
+                // AQUÍ ASIGNAMOS EL VALOR REAL
+                comentarios: numComentarios, 
+                
                 liked: !!likeRecord,
                 likeId: likeRecord ? likeRecord.id : null
             };
@@ -129,16 +142,17 @@ export async function obtenerRecetasInicio() {
 export async function toggleLike(receta) {
     if (!pb.authStore.isValid) {
         alert("Debes iniciar sesión para dar like.");
-        return null; 
+        return null;
     }
 
     try {
-        // Si ya tiene like, lo borramos
-        if (receta.liked && receta.likeId) {
+        // CORRECCIÓN CLAVE: Solo miramos si tiene un ID de like.
+        // Si Pinia ya puso liked=false, no importa, lo que importa es que EXISTE un registro que borrar.
+        if (receta.likeId) {
             await pb.collection("likes").delete(receta.likeId);
             return { liked: false, likeId: null };
         } 
-        // Si no tiene like, lo creamos
+        // Si no tiene ID, creamos el like
         else {
             const data = {
                 usuario: pb.authStore.model.id,
@@ -155,7 +169,6 @@ export async function toggleLike(receta) {
 
 // --- UTILIDADES ---
 
-// Función auxiliar para manejar campos que pueden venir como JSON o texto
 function parseJSONField(value) {
     if (!value) return [];
     if (Array.isArray(value)) return value;
