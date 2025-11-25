@@ -13,6 +13,7 @@
             <br />
             📧
             <a
+                class="contact__email-link"
                 href="https://mail.google.com/mail/?view=cm&fs=1&to=erb37@gcloud.ua.es"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -21,7 +22,6 @@
             </a>
         </p>
 
-        <!-- Redes sociales -->
         <div class="contact__socials" aria-label="Redes sociales">
             <a class="contact__social-link" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
                 <img class="contact__social-icon" src="/youtube.png" alt="YouTube"/>
@@ -51,63 +51,79 @@
 </template>
 
 <style scoped>
-/* ==================== Main / Contact ==================== */
-.contact {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 40px 20px 120px;
-    text-align: justify;
-}
+    /* ==================== Main / Contact ==================== */
+    .contact {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 40px 20px 120px;
+        text-align: justify;
+    }
 
-.contact__title {
-    font-size: 2rem;
-    margin-bottom: 10px;
-}
+    .contact__title {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
 
-.contact__intro,
-.contact__info,
-.contact__email {
-    margin-bottom: 20px;
-    line-height: 1.2;
-    font-size: 18px;
-}
+    .contact__intro,
+    .contact__info,
+    .contact__email {
+        margin-bottom: 20px;
+        line-height: 1.2;
+        font-size: 18px;
+    }
 
-/* ==================== Socials ==================== */
-.contact__socials {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin: 20px 0;
-}
+    /* --- ESTILO NUEVO PARA EL EMAIL --- */
+    .contact__email-link {
+        text-decoration: none;
+        /* Usamos el verde global de Vue por si acaso, o el que herede */
+        color: hsla(160, 100%, 37%, 1); 
+        transition: 0.3s;
+        padding: 0 2px;
+    }
 
-.contact__social-link {
-    display: inline-flex;
-    width: 55px;
-    height: 55px;
-    align-items: center;
-    justify-content: center;
-    border-radius: 999px;
-    text-decoration: none;
-}
+    /* Sobrescribimos el hover global */
+    .contact__email-link:hover {
+        background-color: transparent !important; /* Quita el fondo verde */
+        text-decoration: underline;               /* Añade subrayado */
+        text-decoration-color: hsla(160, 100%, 37%, 1); /* Color del subrayado (el verde) */
+        text-underline-offset: 3px;               /* Separa un poco la línea del texto */
+    }
 
-/* Imagen más grande + transición suave */
-.contact__social-icon {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    transition: transform 0.15s ease-out;
-}
+    /* ==================== Socials ==================== */
+    .contact__socials {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        margin: 20px 0;
+    }
+
+    .contact__social-link {
+        display: inline-flex;
+        width: 55px;
+        height: 55px;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        text-decoration: none;
+    }
+
+    /* Imagen más grande + transición suave */
+    .contact__social-icon {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        display: block;
+        transition: transform 0.15s ease-out;
+    }
 
     /* Quitamos el fondo del a:hover global y solo usamos zoom en hover */
     .contact__socials a:hover {
-    background-color: transparent !important;
-    outline: none;
+        background-color: transparent !important;
+        outline: none;
     }
 
     /* SOLO hover hace zoom, no focus */
     .contact__socials a:hover .contact__social-icon {
-    transform: scale(1.08);
+        transform: scale(1.08);
     }
-
 </style>

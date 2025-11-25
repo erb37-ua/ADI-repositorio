@@ -132,7 +132,7 @@
           <h3 class="dropdown-menu__title">GENERAL</h3>
           <div class="dropdown-menu__links-wrapper">
             <RouterLink to="/" class="dropdown-menu__link"><strong>Ver Todas</strong></RouterLink>
-            <RouterLink to="/list?filter=guardados" class="dropdown-menu__link">Guardados</RouterLink>
+            <RouterLink to="/?filter=guardados" class="dropdown-menu__link">Guardados</RouterLink>
           </div>
         </div>
         
