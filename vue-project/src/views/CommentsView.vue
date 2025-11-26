@@ -9,7 +9,7 @@
     // Edición
     const editingId = ref(null)
     const editTexto = ref('')
-    const editRating = ref('5')
+    const editRating = ref(5)
 
     // Paginación
     const currentPage = ref(1)
@@ -46,14 +46,14 @@
     const startEdit = (comment) => {
         editingId.value = comment.id
         editTexto.value = comment.texto || ''
-        editRating.value = comment.rating != null ? String(comment.rating) : '5'
+        editRating.value = comment.rating != null ? String(comment.rating) : 5
     }
 
     // Cancelar edición
     const cancelEdit = () => {
         editingId.value = null
         editTexto.value = ''
-        editRating.value = '5'
+        editRating.value = 5
     }
 
     // Guardar comentario
@@ -185,13 +185,14 @@
                 ></textarea>
 
                 <label class="my-comments__label">Valoración:</label>
-                <select v-model="editRating" class="my-comments__select">
-                    <option value="5">5 estrellas</option>
-                    <option value="4">4 estrellas</option>
-                    <option value="3">3 estrellas</option>
-                    <option value="2">2 estrellas</option>
-                    <option value="1">1 estrella</option>
+                <select v-model.number="editRating" class="my-comments__select">
+                    <option :value="5">{{ '⭐'.repeat(5) }}</option>
+                    <option :value="4">{{ '⭐'.repeat(4) }}</option>
+                    <option :value="3">{{ '⭐'.repeat(3) }}</option>
+                    <option :value="2">{{ '⭐'.repeat(2) }}</option>
+                    <option :value="1">{{ '⭐'.repeat(1) }}</option>
                 </select>
+
 
                 <div class="my-comments__edit-actions">
                     <button

@@ -12,7 +12,7 @@ const loading = ref(true)
 
 // --- estado comentarios ---
 const commentText = ref('')
-const commentRating = ref('5')
+const commentRating = ref(5)
 const submittingComment = ref(false)
 
 const comments = computed(() => store.recipeComments || [])
@@ -86,7 +86,7 @@ const handleSubmitComment = async () => {
         })
         // limpiar formulario
         commentText.value = ''
-        commentRating.value = '5'
+        commentRating.value = 5
     } catch (err) {
         console.error('Error creando comentario:', err)
         alert('No se pudo enviar el comentario.')
@@ -170,13 +170,13 @@ const handleSubmitComment = async () => {
                             id="rating"
                             name="rating"
                             class="recipe-comments__input"
-                            v-model="commentRating"
+                            v-model.number="commentRating"
                         >
-                            <option value="5">5 estrellas</option>
-                            <option value="4">4 estrellas</option>
-                            <option value="3">3 estrellas</option>
-                            <option value="2">2 estrellas</option>
-                            <option value="1">1 estrella</option>
+                            <option :value="5">{{ '⭐'.repeat(5) }}</option>
+                            <option :value="4">{{ '⭐'.repeat(4) }}</option>
+                            <option :value="3">{{ '⭐'.repeat(3) }}</option>
+                            <option :value="2">{{ '⭐'.repeat(2) }}</option>
+                            <option :value="1">{{ '⭐'.repeat(1) }}</option>
                         </select>
                     </div>
                     <div class="recipe-comments__row">

@@ -130,13 +130,6 @@
             </p>
             </Transition>
 
-            <!-- Contraseña olvidada -->
-            <div class="login-card__form-row form-row--compact-link">
-                <a href="#" class="login-card__link login-card__link--forgot">
-                    ¿Contraseña olvidada?
-                </a>
-            </div>
-
             <!-- Botón iniciar -->
             <div class="login-card__form-row">
                 <button
@@ -154,27 +147,6 @@
                 <RouterLink to="/register" class="login-card__link login-card__link--register">
                     ¿No tienes cuenta? Regístrate
                 </RouterLink>
-            </div>
-
-            <!-- Recuérdame -->
-            <div class="login-card__form-row">
-            <label class="login-card__remember">
-                <input type="checkbox" id="recordarme" v-model="remember" />
-                Recuérdame
-            </label>
-            </div>
-
-            <!-- Separador -->
-            <div class="login-card__separator">o</div>
-
-            <!-- Botón Google -->
-            <div class="login-card__form-row">
-                <button
-                    type="button"
-                    class="login-card__button login-card__button--google"
-                >
-                    <i class="fa-brands fa-google"></i> Continúa con Google
-                </button>
             </div>
         </form>
         </section>
@@ -273,10 +245,6 @@
     font-weight: bold;
     }
 
-    .login-card__link--forgot {
-    color: #2b5b5b;
-    }
-
     .login-card__link--register {
     color: #2b5b5b;
     }
@@ -299,44 +267,6 @@
     cursor: default;
     }
 
-    .login-card__button--google {
-    background: #fff;
-    color: var(--dark);
-    border: 1px solid var(--dark);
-    margin-bottom: 20px;
-    }
-
-    .login-card__remember {
-    font-size: 14px;
-    color: #333;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    }
-
-    .login-card__separator {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    color: #666;
-    margin: 24px 0;
-    }
-
-    .login-card__separator::before,
-    .login-card__separator::after {
-    content: "";
-    flex: 1;
-    border-bottom: 1px solid #ccc;
-    }
-
-    .login-card__separator:not(:empty)::before {
-    margin-right: 0.75em;
-    }
-
-    .login-card__separator:not(:empty)::after {
-    margin-left: 0.75em;
-    }
 
     /* Mensaje de error */
     .login-card__error {
