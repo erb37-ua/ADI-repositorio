@@ -12,7 +12,7 @@ const loading = ref(true)
 
 // --- estado comentarios ---
 const commentText = ref('')
-const commentRating = ref(5)
+const commentRating = ref(5)   // 1–5
 const submittingComment = ref(false)
 
 const comments = computed(() => store.recipeComments || [])
@@ -27,9 +27,7 @@ onMounted(async () => {
     }
 
     try {
-        // datos de la receta
         receta.value = await store.fetchRecipeById(id)
-        // comentarios de esa receta
         await store.loadCommentsForRecipe(id)
     } catch (error) {
         console.error("Error cargando receta/comentarios:", error)
@@ -82,7 +80,7 @@ const handleSubmitComment = async () => {
         await store.createCommentForRecipe({
             recetaId: receta.value.id,
             texto: commentText.value.trim(),
-            rating: Number(commentRating.value),
+            rating: commentRating.value,   // ya es número
         })
         // limpiar formulario
         commentText.value = ''
@@ -101,14 +99,14 @@ const handleSubmitComment = async () => {
         <div v-if="loading" style="text-align: center; padding: 60px;">Cargando detalle...</div>
 
         <main v-else-if="receta" class="recipe-detail">
-            <h2 class="recipe-detail__title"> 
+            <h2 class="recipe-detail__title">
                 <strong>{{ receta.titulo }}</strong>
             </h2>
 
-            <img 
-                class="recipe-detail__image" 
-                :src="receta.imagenUrl || '/placeholder.jpg'" 
-                :alt="receta.titulo" 
+            <img
+                class="recipe-detail__image"
+                :src="receta.imagenUrl || '/placeholder.jpg'"
+                :alt="receta.titulo"
                 @error="$event.target.src = '/placeholder.jpg'"
             />
 
@@ -119,11 +117,22 @@ const handleSubmitComment = async () => {
             <h3 class="recipe-detail__section-title">
                 <strong>INGREDIENTES</strong>
             </h3>
-            
+
             <div class="recipe-detail__ingredients">
-                <div v-if="Array.isArray(receta.ingredientes) && receta.ingredientes.length > 0 && receta.ingredientes[0].section">
-                    <div v-for="(seccion, index) in receta.ingredientes" :key="index" class="ingredient-group">
-                        <h4 v-if="seccion.section" class="recipe-detail__subsection-title">{{ seccion.section }}</h4>
+                <div
+                    v-if="Array.isArray(receta.ingredientes) && receta.ingredientes.length > 0 && receta.ingredientes[0].section"
+                >
+                    <div
+                        v-for="(seccion, index) in receta.ingredientes"
+                        :key="index"
+                        class="ingredient-group"
+                    >
+                        <h4
+                            v-if="seccion.section"
+                            class="recipe-detail__subsection-title"
+                        >
+                            {{ seccion.section }}
+                        </h4>
                         <ul class="recipe-detail__list">
                             <li v-for="(item, i) in seccion.items" :key="i">
                                 <span v-if="item.amount" class="amount">{{ item.amount }}</span>
@@ -143,9 +152,12 @@ const handleSubmitComment = async () => {
             <h3 class="recipe-detail__section-title">
                 <strong>PASOS</strong>
             </h3>
-            
+
             <div class="recipe-detail__steps-container">
-                <ol v-if="Array.isArray(receta.pasos) && receta.pasos.length > 0 && receta.pasos[0].instruction" class="recipe-detail__steps">
+                <ol
+                    v-if="Array.isArray(receta.pasos) && receta.pasos.length > 0 && receta.pasos[0].instruction"
+                    class="recipe-detail__steps"
+                >
                     <li v-for="(step, index) in receta.pasos" :key="index">
                         <span v-html="formatInstruction(step.instruction)"></span>
                     </li>
@@ -166,19 +178,25 @@ const handleSubmitComment = async () => {
                 <form class="recipe-comments__form" @submit.prevent="handleSubmitComment">
                     <div class="recipe-comments__row">
                         <label for="rating">Valoración:</label><br />
-                        <select
+                        <div
                             id="rating"
-                            name="rating"
-                            class="recipe-comments__input"
-                            v-model.number="commentRating"
+                            class="recipe-comments__rating-stars"
+                            aria-label="Valoración"
                         >
-                            <option :value="5">{{ '⭐'.repeat(5) }}</option>
-                            <option :value="4">{{ '⭐'.repeat(4) }}</option>
-                            <option :value="3">{{ '⭐'.repeat(3) }}</option>
-                            <option :value="2">{{ '⭐'.repeat(2) }}</option>
-                            <option :value="1">{{ '⭐'.repeat(1) }}</option>
-                        </select>
+                            <button
+                                v-for="star in 5"
+                                :key="star"
+                                type="button"
+                                class="recipe-comments__star"
+                                :class="{ 'recipe-comments__star--active': star <= commentRating }"
+                                @click="commentRating = star"
+                                :aria-label="`${star} estrellas`"
+                            >
+                                ★
+                            </button>
+                        </div>
                     </div>
+
                     <div class="recipe-comments__row">
                         <label for="comment">Comentario:</label><br />
                         <textarea
@@ -211,8 +229,8 @@ const handleSubmitComment = async () => {
                 </p>
 
                 <p
-                  v-else-if="comments.length === 0"
-                  class="recipe-comments__meta"
+                    v-else-if="comments.length === 0"
+                    class="recipe-comments__meta"
                 >
                     Todavía no hay comentarios.
                 </p>
@@ -232,8 +250,8 @@ const handleSubmitComment = async () => {
                             {{ formatDate(comment.created) }}
                         </p>
                         <p
-                          v-if="comment.rating != null"
-                          class="recipe-comments__stars"
+                            v-if="comment.rating != null"
+                            class="recipe-comments__stars"
                         >
                             {{ '⭐'.repeat(comment.rating) }}
                         </p>
@@ -250,11 +268,11 @@ const handleSubmitComment = async () => {
 
 <style scoped>
     .recipe-detail {
-        max-width: 800px; /* Un poco más ancho para leer mejor */
+        max-width: 800px;
         margin: 0 auto;
         text-align: center;
         padding-bottom: 60px;
-        margin-top: 30px; /* Compensar header */
+        margin-top: 30px;
         padding-left: 20px;
         padding-right: 20px;
     }
@@ -322,7 +340,7 @@ const handleSubmitComment = async () => {
     }
 
     .recipe-detail__list {
-        list-style: none; /* Quitamos puntos por defecto */
+        list-style: none;
         padding: 0;
     }
 
@@ -339,7 +357,7 @@ const handleSubmitComment = async () => {
     }
 
     .recipe-detail__steps {
-        padding-left: 20px; /* Espacio para los números */
+        padding-left: 20px;
     }
 
     .recipe-detail__steps li {
@@ -349,13 +367,14 @@ const handleSubmitComment = async () => {
         padding-left: 10px;
     }
 
-    /* Estilos de Comentarios (Mantenidos) */
     .recipe-comments {
         max-width: 800px;
         margin: 0 auto 120px;
         padding: 0 20px;
     }
-    .recipe-comments__box, .recipe-comments__list {
+
+    .recipe-comments__box,
+    .recipe-comments__list {
         background: #fff;
         border-radius: 12px;
         border: 1px solid rgba(0,0,0,0.1);
@@ -363,61 +382,88 @@ const handleSubmitComment = async () => {
         margin-bottom: 30px;
     }
 
-    .recipe-comments__title { 
-        text-align: center; 
-        margin-bottom: 20px; 
-        color: var(--dark); 
+    .recipe-comments__title {
+        text-align: center;
+        margin-bottom: 20px;
+        color: var(--dark);
     }
 
-    .recipe-comments__row { 
-        margin-bottom: 15px; 
+    .recipe-comments__row {
+        margin-bottom: 15px;
     }
 
-    .recipe-comments__input { 
-        width: 100%; 
-        padding: 12px; 
-        border-radius: 8px; 
-        border: 1px solid #ccc; 
-        margin-top: 5px; 
-        font-family: inherit; 
-    }
-    .recipe-comments__btn { 
-        padding: 12px 24px; 
-        border-radius: 8px; 
-        background: var(--dark); 
-        color: #fff; 
-        border: none; 
-        cursor: pointer; 
-        font-size: 1rem; 
-        width: 100%; 
+    .recipe-comments__input {
+        width: 100%;
+        padding: 12px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        margin-top: 5px;
+        font-family: inherit;
     }
 
-    .recipe-comments__btn:hover { 
-        opacity: 0.9; 
+    .recipe-comments__btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        background: var(--dark);
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        width: 100%;
     }
 
-    .recipe-comments__item { 
-        margin-bottom: 20px; 
+    .recipe-comments__btn:hover {
+        opacity: 0.9;
     }
 
-    .recipe-comments__meta { 
-        font-size: 0.85rem; 
-        color: #888; 
-        margin-bottom: 5px; 
+    /* Estrellas de valoración (formulario) */
+    .recipe-comments__rating-stars {
+        display: flex;
+        gap: 6px;
+        margin-top: 6px;
     }
 
-    .recipe-comments__divider { 
-        border: 0; 
-        border-top: 1px solid #eee; 
-        margin-top: 15px; 
+    .recipe-comments__star {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 26px;
+        padding: 0;
+        line-height: 1;
+        color: #d1d5db; /* gris claro */
+        transition: transform 0.1s ease, color 0.1s ease;
     }
 
-    :deep(strong), :deep(b) {
+    .recipe-comments__star--active {
+        color: #fbbf24; /* amarillo */
+    }
+
+    .recipe-comments__star:hover {
+        transform: scale(1.1);
+    }
+
+    .recipe-comments__item {
+        margin-bottom: 20px;
+    }
+
+    .recipe-comments__meta {
+        font-size: 0.85rem;
+        color: #888;
+        margin-bottom: 5px;
+    }
+
+    .recipe-comments__divider {
+        border: 0;
+        border-top: 1px solid #eee;
+        margin-top: 15px;
+    }
+
+    :deep(strong),
+    :deep(b) {
         font-weight: 700 !important;
-        color: var(--dark); /* Opcional: para que resalte con el color principal */
+        color: var(--dark);
     }
-    
-    /* Específico para los pasos si quieres asegurar más */
+
     .recipe-detail__steps li :deep(strong) {
         font-weight: 800;
     }

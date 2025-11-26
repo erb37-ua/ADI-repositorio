@@ -1,275 +1,298 @@
 <script setup>
-    import { ref, computed, onMounted } from 'vue'
-    import { useRouter, RouterLink } from 'vue-router'
-    import { useMainStore } from '@/stores/main'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, RouterLink } from 'vue-router'
+import { useMainStore } from '@/stores/main'
 
-    const router = useRouter()
-    const store = useMainStore()
+const router = useRouter()
+const store = useMainStore()
 
-    // Edición
-    const editingId = ref(null)
-    const editTexto = ref('')
-    const editRating = ref(5)
+// Edición
+const editingId = ref(null)
+const editTexto = ref('')
+const editRating = ref(5)
 
-    // Paginación
-    const currentPage = ref(1)
-    const pageSize = 4 // igual que en ListView
+// Paginación
+const currentPage = ref(1)
+const pageSize = 4 // igual que en ListView
 
-    onMounted(async () => {
-        if (!store.isLogged) {
-            router.push('/login')
-            return
-        }
+onMounted(async () => {
+    if (!store.isLogged) {
+        router.push('/login')
+        return
+    }
 
-        try {
-            await store.loadMyComments()
-        } catch (err) {}
-    })
+    try {
+        await store.loadMyComments()
+    } catch (err) {}
+})
 
-    const hasComments = computed(() => store.myComments.length > 0)
+const hasComments = computed(() => store.myComments.length > 0)
 
-    const totalPages = computed(() =>
+const totalPages = computed(() =>
     Math.max(1, Math.ceil(store.myComments.length / pageSize)),
-    )
+)
 
-    const paginatedComments = computed(() => {
+const paginatedComments = computed(() => {
     const start = (currentPage.value - 1) * pageSize
     return store.myComments.slice(start, start + pageSize)
-    })
+})
 
-    const setPage = (page) => {
-        if (page < 1 || page > totalPages.value) return
-        currentPage.value = page
+const setPage = (page) => {
+    if (page < 1 || page > totalPages.value) return
+    currentPage.value = page
+}
+
+// Iniciar edición de un comentario
+const startEdit = (comment) => {
+    editingId.value = comment.id
+    editTexto.value = comment.texto || ''
+    editRating.value = comment.rating != null ? comment.rating : 5
+}
+
+// Cancelar edición
+const cancelEdit = () => {
+    editingId.value = null
+    editTexto.value = ''
+    editRating.value = 5
+}
+
+// Guardar comentario
+const saveEdit = async () => {
+    if (!editingId.value) return
+    if (!editTexto.value.trim()) {
+        alert('El comentario no puede estar vacío.')
+        return
     }
 
-    // Iniciar edición de un comentario
-    const startEdit = (comment) => {
-        editingId.value = comment.id
-        editTexto.value = comment.texto || ''
-        editRating.value = comment.rating != null ? String(comment.rating) : 5
-    }
-
-    // Cancelar edición
-    const cancelEdit = () => {
-        editingId.value = null
-        editTexto.value = ''
-        editRating.value = 5
-    }
-
-    // Guardar comentario
-    const saveEdit = async () => {
-        if (!editingId.value) return
-        if (!editTexto.value.trim()) {
-            alert('El comentario no puede estar vacío.')
-            return
-        }
-
-        try {
-            await store.updateMyComment(editingId.value, {
+    try {
+        await store.updateMyComment(editingId.value, {
             texto: editTexto.value.trim(),
-            rating: Number(editRating.value),
-            })
-            cancelEdit()
-            alert('Comentario actualizado correctamente.')
-        } catch (err) {
-            console.error('Error actualizando comentario (vista):', err)
-            alert('No se pudo actualizar el comentario.')
-        }
-    }
-
-
-    // ELIMINAR COMENTARIO
-    const handleDelete = async (id) => {
-        if (!confirm('¿Seguro que quieres eliminar este comentario?')) return
-        try {
-            await store.deleteMyComment(id)
-            // ajustar página si se queda fuera de rango
-            if (currentPage.value > totalPages.value) {
-            currentPage.value = totalPages.value
-            }
-        } catch (err) {
-            console.error('Error eliminando comentario:', err)
-            alert('No se pudo eliminar el comentario.')
-        }
-    }
-
-    // Fecha
-    const formatDate = (iso) => {
-        if (!iso) return ''
-        const d = new Date(iso)
-        return d.toLocaleString('es-ES', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit',
+            rating: editRating.value,
         })
+        cancelEdit()
+        alert('Comentario actualizado correctamente.')
+    } catch (err) {
+        console.error('Error actualizando comentario (vista):', err)
+        alert('No se pudo actualizar el comentario.')
     }
+}
+
+// ELIMINAR COMENTARIO
+const handleDelete = async (id) => {
+    if (!confirm('¿Seguro que quieres eliminar este comentario?')) return
+    try {
+        await store.deleteMyComment(id)
+        // ajustar página si se queda fuera de rango
+        if (currentPage.value > totalPages.value) {
+            currentPage.value = totalPages.value
+        }
+    } catch (err) {
+        console.error('Error eliminando comentario:', err)
+        alert('No se pudo eliminar el comentario.')
+    }
+}
+
+// Fecha
+const formatDate = (iso) => {
+    if (!iso) return ''
+    const d = new Date(iso)
+    return d.toLocaleString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    })
+}
 </script>
 
 <template>
     <div class="container">
         <section class="my-comments-card">
-        <h2 class="my-comments__title"><strong>Mis comentarios</strong></h2>
+            <h2 class="my-comments__title"><strong>Mis comentarios</strong></h2>
 
-        <p v-if="store.myCommentsLoading" class="my-comments__status">
-            Cargando tus comentarios...
-        </p>
+            <p v-if="store.myCommentsLoading" class="my-comments__status">
+                Cargando tus comentarios...
+            </p>
 
-        <p v-else-if="!hasComments" class="my-comments__status">
-            Aún no has dejado ningún comentario.
-            <RouterLink to="/" class="my-comments__link">
-            Ve a una receta y deja el primero 😊
-            </RouterLink>
-        </p>
-
-        <p v-if="store.myCommentsError" class="my-comments__error">
-            {{ store.myCommentsError }}
-        </p>
-
-        <div v-else-if="hasComments" class="my-comments__list">
-            <article
-            v-for="comment in paginatedComments"
-            :key="comment.id"
-            class="my-comments__item"
-            >
-            <div class="my-comments__recipe">
-                <img
-                class="my-comments__recipe-image"
-                :src="comment.receta?.imagenUrl || '/placeholder.jpg'"
-                :alt="comment.receta?.titulo || 'Receta'"
-                @error="$event.target.src = '/placeholder.jpg'"
-                />
-                <div class="my-comments__recipe-info">
-                <RouterLink
-                    v-if="comment.receta"
-                    :to="{ name: 'recipe-detail', params: { id: comment.receta.id } }"
-                    class="my-comments__recipe-title"
-                >
-                    {{ comment.receta.titulo }}
+            <p v-else-if="!hasComments" class="my-comments__status">
+                Aún no has dejado ningún comentario.
+                <RouterLink to="/" class="my-comments__link">
+                    Ve a una receta y deja el primero 😊
                 </RouterLink>
-                <p v-else class="my-comments__recipe-title">
-                    Receta eliminada
-                </p>
-                <p class="my-comments__meta">
-                    Creado: {{ formatDate(comment.created) }}
-                    <span v-if="comment.updated && comment.updated !== comment.created">
-                    · Editado: {{ formatDate(comment.updated) }}
-                    </span>
-                </p>
-                <p class="my-comments__rating" v-if="comment.rating != null">
-                    Valoración:
-                    <span class="my-comments__stars">
-                    {{ '⭐'.repeat(comment.rating) }}
-                    </span>
-                    <span class="my-comments__rating-number">
-                    ({{ comment.rating }}/5)
-                    </span>
-                </p>
-                </div>
-            </div>
+            </p>
 
-            <div class="my-comments__content">
-                <!-- Modo lectura -->
-                <p v-if="editingId !== comment.id" class="my-comments__text">
-                {{ comment.texto }}
-                </p>
+            <p v-if="store.myCommentsError" class="my-comments__error">
+                {{ store.myCommentsError }}
+            </p>
 
-                <!-- Modo edición -->
-                <div v-else class="my-comments__edit">
-                <label class="my-comments__label">Comentario:</label>
-                <textarea
-                    v-model="editTexto"
-                    rows="3"
-                    class="my-comments__textarea"
-                ></textarea>
+            <div v-else-if="hasComments" class="my-comments__list">
+                <article
+                    v-for="comment in paginatedComments"
+                    :key="comment.id"
+                    class="my-comments__item"
+                >
+                    <div class="my-comments__recipe">
+                        <img
+                            class="my-comments__recipe-image"
+                            :src="comment.receta?.imagenUrl || '/placeholder.jpg'"
+                            :alt="comment.receta?.titulo || 'Receta'"
+                            @error="$event.target.src = '/placeholder.jpg'"
+                        />
+                        <div class="my-comments__recipe-info">
+                            <RouterLink
+                                v-if="comment.receta"
+                                :to="{ name: 'recipe-detail', params: { id: comment.receta.id } }"
+                                class="my-comments__recipe-title"
+                            >
+                                {{ comment.receta.titulo }}
+                            </RouterLink>
+                            <p v-else class="my-comments__recipe-title">
+                                Receta eliminada
+                            </p>
+                            <p class="my-comments__meta">
+                                Creado: {{ formatDate(comment.created) }}
+                                <span
+                                    v-if="
+                                        comment.updated &&
+                                        comment.updated !== comment.created
+                                    "
+                                >
+                                    · Editado: {{ formatDate(comment.updated) }}
+                                </span>
+                            </p>
+                            <p
+                                class="my-comments__rating"
+                                v-if="comment.rating != null"
+                            >
+                                Valoración:
+                                <span class="my-comments__stars">
+                                    {{ '⭐'.repeat(comment.rating) }}
+                                </span>
+                                <span class="my-comments__rating-number">
+                                    ({{ comment.rating }}/5)
+                                </span>
+                            </p>
+                        </div>
+                    </div>
 
-                <label class="my-comments__label">Valoración:</label>
-                <select v-model.number="editRating" class="my-comments__select">
-                    <option :value="5">{{ '⭐'.repeat(5) }}</option>
-                    <option :value="4">{{ '⭐'.repeat(4) }}</option>
-                    <option :value="3">{{ '⭐'.repeat(3) }}</option>
-                    <option :value="2">{{ '⭐'.repeat(2) }}</option>
-                    <option :value="1">{{ '⭐'.repeat(1) }}</option>
-                </select>
+                    <div class="my-comments__content">
+                        <!-- Modo lectura -->
+                        <p
+                            v-if="editingId !== comment.id"
+                            class="my-comments__text"
+                        >
+                            {{ comment.texto }}
+                        </p>
 
+                        <!-- Modo edición -->
+                        <div v-else class="my-comments__edit">
+                            <label class="my-comments__label">Comentario:</label>
+                            <textarea
+                                v-model="editTexto"
+                                rows="3"
+                                class="my-comments__textarea"
+                            ></textarea>
 
-                <div class="my-comments__edit-actions">
+                            <label class="my-comments__label">Valoración:</label>
+                            <div class="my-comments__rating-stars">
+                                <button
+                                    v-for="star in 5"
+                                    :key="star"
+                                    type="button"
+                                    class="my-comments__star"
+                                    :class="{
+                                        'my-comments__star--active':
+                                            star <= editRating,
+                                    }"
+                                    @click="editRating = star"
+                                    :aria-label="`${star} estrellas`"
+                                >
+                                    ★
+                                </button>
+                            </div>
+
+                            <div class="my-comments__edit-actions">
+                                <button
+                                    type="button"
+                                    class="my-comments__btn my-comments__btn--secondary"
+                                    @click="cancelEdit"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    type="button"
+                                    class="my-comments__btn my-comments__btn--primary"
+                                    @click="saveEdit"
+                                >
+                                    Guardar cambios
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Acciones -->
+                        <div
+                            v-if="editingId !== comment.id"
+                            class="my-comments__actions"
+                        >
+                            <button
+                                type="button"
+                                class="my-comments__chip my-comments__chip--edit"
+                                @click="startEdit(comment)"
+                            >
+                                Editar
+                            </button>
+                            <button
+                                type="button"
+                                class="my-comments__chip my-comments__chip--delete"
+                                @click="handleDelete(comment.id)"
+                            >
+                                Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Paginación -->
+                <nav
+                    v-if="store.myComments.length > 0"
+                    class="my-comments__pagination"
+                    aria-label="Paginación"
+                >
                     <button
-                    type="button"
-                    class="my-comments__btn my-comments__btn--secondary"
-                    @click="cancelEdit"
+                        type="button"
+                        class="my-comments__page-link"
+                        @click="setPage(currentPage - 1)"
                     >
-                    Cancelar
+                        «
                     </button>
                     <button
-                    type="button"
-                    class="my-comments__btn my-comments__btn--primary"
-                    @click="saveEdit"
+                        v-for="page in totalPages"
+                        :key="page"
+                        type="button"
+                        class="my-comments__page-link"
+                        :class="{
+                            'my-comments__page-link--active':
+                                page === currentPage,
+                        }"
+                        @click="setPage(page)"
                     >
-                    Guardar cambios
+                        {{ page }}
                     </button>
-                </div>
-                </div>
-
-                <!-- Acciones -->
-                <div v-if="editingId !== comment.id" class="my-comments__actions">
-                <button
-                    type="button"
-                    class="my-comments__chip my-comments__chip--edit"
-                    @click="startEdit(comment)"
-                >
-                    Editar
-                </button>
-                <button
-                    type="button"
-                    class="my-comments__chip my-comments__chip--delete"
-                    @click="handleDelete(comment.id)"
-                >
-                    Eliminar
-                </button>
-                </div>
+                    <button
+                        type="button"
+                        class="my-comments__page-link"
+                        @click="setPage(currentPage + 1)"
+                    >
+                        »
+                    </button>
+                </nav>
             </div>
-            </article>
-
-            <!-- Paginación -->
-            <nav
-            v-if="store.myComments.length > 0"
-            class="my-comments__pagination"
-            aria-label="Paginación"
-            >
-            <button
-                type="button"
-                class="my-comments__page-link"
-                @click="setPage(currentPage - 1)"
-            >
-                «
-            </button>
-            <button
-                v-for="page in totalPages"
-                :key="page"
-                type="button"
-                class="my-comments__page-link"
-                :class="{ 'my-comments__page-link--active': page === currentPage }"
-                @click="setPage(page)"
-            >
-                {{ page }}
-            </button>
-            <button
-                type="button"
-                class="my-comments__page-link"
-                @click="setPage(currentPage + 1)"
-            >
-                »
-            </button>
-            </nav>
-        </div>
         </section>
     </div>
 </template>
 
 <style scoped>
-
     .container {
         max-width: 1000px;
         margin: 0 auto;
@@ -375,7 +398,7 @@
     }
 
     .my-comments__rating-number {
-    margin-left: 4px;
+        margin-left: 4px;
         color: #666;
     }
 
@@ -410,12 +433,30 @@
         resize: vertical;
     }
 
-    .my-comments__select {
-        width: 150px;
-        padding: 6px 8px;
-        border-radius: 10px;
-        border: 1px solid #ccc;
-        margin-bottom: 10px;
+    /* Estrellas de edición */
+    .my-comments__rating-stars {
+        display: flex;
+        gap: 6px;
+        margin: 4px 0 10px;
+    }
+
+    .my-comments__star {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 24px;
+        padding: 0;
+        line-height: 1;
+        color: #d1d5db; /* gris claro */
+        transition: transform 0.1s ease, color 0.1s ease;
+    }
+
+    .my-comments__star--active {
+        color: #fbbf24; /* amarillo */
+    }
+
+    .my-comments__star:hover {
+        transform: scale(1.1);
     }
 
     /* Botones */
